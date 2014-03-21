@@ -1,7 +1,7 @@
 import json
-from django.http import HttpResponse, StreamingHttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render
-from models import AP
+from models import AP, Report
 
 sample = {
     'essid': 'wefreenetworkessid',
@@ -14,23 +14,19 @@ report_sample = {
     'bssid': 'A0:F3:C1:86:15:0D',
     'password': 'wrong_password',
     'success': True,
+    'lat': -32.123,
+    'long': 12.343
 }
-
-def stream_response(request):
-    resp = StreamingHttpResponse(stream_response_generator())
-    return resp
-
-def stream_response_generator():
-    aps = AP.objects.all().select_related()
-    for ap in aps:
-        data = {"essid": ap.essid, "bssid": ap.bssid, "passwords": [pwd for pwd in ap.report_set.filter(success=True)]}
-        yield json.dumps(data)
 
 def index(request):
     return HttpResponse("WeeFree")
 
 def get(request):
-    return stream_response(request)
+    ret_data = ""
+    aps = AP.objects.all().select_related()
+    for ap in aps:
+        ret_data += ap.to_json() + "\n"
+    return HttpResponse(ret_data, mimetype="application/json")
 
 def report(request):
     if not request.method == "POST":
@@ -40,8 +36,9 @@ def report(request):
     if not (set(data.keys()) == set(report_sample.keys())):
             return HttpResponse("{'message': 'invalid keys'}", status=418, mimetype="application/json")
 
-    ap = AP.objects.get_or_create(bssid=data["bssid"], essid=data["essid"])
+    ap, created = AP.objects.get_or_create(bssid=data["bssid"], essid=data["essid"])
 
-    report = Report.objects.create(ap=ap, password=data["password"], success=data["success"])
+    report = Report(ap=ap, password=data["password"], success=data["success"], geo_lat=data["lat"], geo_long=data["long"])
+    report.save()
 
     return HttpResponse("")
