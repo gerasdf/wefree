@@ -1,0 +1,117 @@
+# -*- coding: UTF-8 -*-
+
+from __future__ import division
+
+"""The main window."""
+
+import logging
+
+from bisect import bisect
+
+import netifaces
+import wifi
+
+from PyQt4.QtGui import (
+    QAction,
+    QMainWindow,
+    QMessageBox,
+)
+from PyQt4.QtGui import QSystemTrayIcon, QIcon, QMenu
+
+
+logger = logging.getLogger('wefree.main')
+
+ABOUT_TEXT = u"""
+<center>
+WeFree<br/>
+Let's free the WiFi.<br/>
+</center>
+"""
+
+# signals and levels to use them
+SIGNALS_IMGS = ['25', '50', '75', '100']
+SIGNAL_BREAKPOINTS = [.26, .51, .76]
+
+
+class WifiInterface(object):
+    """Handle the wifi stuff."""
+
+    def get_signals(self):
+        """Get the wifi signals."""
+        signals = []
+        for interface in netifaces.interfaces():
+            try:
+                cells = wifi.Cell.all(interface)
+            except wifi.exceptions.InterfaceError:
+                # not really a wifi one
+                continue
+
+            for cell in cells:  # a little hardcoded
+                # FIXME: here we need to check, even if it's encrypted,
+                # if we have the password!!
+                have_pass = not cell.encrypted
+                _vals = map(int, cell.quality.split("/"))
+                level = _vals[0] / _vals[1]
+                name = cell.ssid
+
+                signals.append((level, name, have_pass))
+        return signals
+
+
+class MainUI(QMainWindow):
+    """Main UI."""
+
+    def __init__(self, app_quit):
+        super(MainUI, self).__init__()
+        self.app_quit = app_quit
+        self.wifi = WifiInterface()
+
+        logger.debug("Main UI started ok")
+        self.sti = None
+        self.iconize()
+
+    def open_about_dialog(self):
+        """Show the about dialog."""
+        QMessageBox.about(self, "WeFree", ABOUT_TEXT)
+
+    def build_menu(self):
+        """Build the menu."""
+        menu = QMenu(self)
+
+        # the signals
+        for level, signal_name, have_pass in self.wifi.get_signals():
+            i = bisect(SIGNAL_BREAKPOINTS, level)
+            if have_pass:
+                fname = "signals-{}.png".format(SIGNALS_IMGS[i])
+            else:
+                fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
+            icon = QIcon("wefree/imgs/" + fname)
+            action = QAction(icon, signal_name, self)
+            menu.addAction(action)
+
+        # the bottom part
+        menu.addSeparator()
+        menu.addAction(QAction(
+            "Refresh", self, triggered=lambda: self.refresh()))
+        menu.addAction(QAction(
+            "Acerca de", self, triggered=lambda: self.open_about_dialog()))
+        menu.addAction(QAction(
+            "Salir", self, triggered=self.app_quit))
+        return menu
+
+    def refresh(self):
+        """Refresh."""
+        menu = self.build_menu()
+        self.sti.setContextMenu(menu)
+
+    def iconize(self):
+        """Show a system tray icon with a small icon."""
+        icon = QIcon("wefree/imgs/icon-192.png")
+        self.sti = QSystemTrayIcon(icon, self)
+        if not self.sti.isSystemTrayAvailable():
+            logger.warning("System tray not available.")
+            return
+
+        menu = self.build_menu()
+        self.sti.setContextMenu(menu)
+        self.sti.show()
