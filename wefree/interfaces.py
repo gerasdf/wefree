@@ -59,7 +59,7 @@ class WifiSignal(object):
         else:
             settings = {
                 '802-11-wireless': {'ssid':self.ssid},
-                'connection': {'id':'garola', 'type':'802-11-wireless', 'uuid':str(uuid.uuid4())},
+                'connection': {'id':'WeFree '+self.ssid, 'type':'802-11-wireless', 'uuid':str(uuid.uuid4())},
                 }
             connection = NetworkManager.Settings.AddConnection(settings)
         settings = self.update_security_settings(settings, passphrase)
