@@ -1,10 +1,12 @@
 import NetworkManager
 from dbus import DBusException
 
-#import sys
-#sys.path.append('..')
 from wefree.passwords_manager import PM
 import uuid
+
+import dbus.mainloop.qt
+
+dbus.mainloop.qt.DBusQtMainLoop(set_as_default=True)
 
 class WifiSignal(object):
     def __init__(self, device, ap):
@@ -22,6 +24,7 @@ class WifiSignal(object):
 
         self.load_local_passwords()
         self.load_db_passwords()
+        
         print "All passwords for %s = %r" % (self.ssid, self.passwords())
         
     def is_connected(self):
@@ -58,6 +61,9 @@ class WifiSignal(object):
                 }
             connection = NetworkManager.Settings.AddConnection(settings)
         settings = self.update_security_settings(settings, passphrase)
+        if settings.has_key('ipv4'): del settings['ipv4']
+        if settings.has_key('ipv6'): del settings['ipv6']
+        
         connection.Update(settings) 
         return connection
 
@@ -129,6 +135,14 @@ class WifiSignal(object):
 class WifiInterfaces(object):
     """Handle the wifi stuff."""
 
+    def __init__(self):
+        #NetworkManager.Settings.NewConnection.connect(self.new_connection)
+        #NetworkManager.NetworkManager.connect_to_signal(NetworkManager.Settings.NewConnection, self.new_connection)
+        return
+    
+    def new_connection(self, new):
+        pass
+    
     def get_signals(self):
         """Get the wifi signals."""
 
