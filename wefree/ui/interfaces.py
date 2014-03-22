@@ -14,6 +14,9 @@ class WifiSignal(object):
     def has_password(self):
         return 0 != len(self.passwords)
 
+    def connect(self):
+        print "Requested connection to %s" % self.ssid
+
 class WifiInterfaces(object):
     """Handle the wifi stuff."""
 

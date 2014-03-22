@@ -58,7 +58,7 @@ class MainUI(QMainWindow):
                 fname = "signals-{}.png".format(SIGNALS_IMGS[i])
             icon = QIcon("wefree/imgs/" + fname)
             action = QAction(
-               icon, signal.ssid, self, triggered = self.network_selected)
+               icon, signal.ssid, self, triggered = (lambda sign: lambda:self.please_connect(sign))(signal))
             menu.addAction(action)
 
         # the bottom part
@@ -71,9 +71,15 @@ class MainUI(QMainWindow):
             "Salir", self, triggered=self.app_quit))
         return menu
 
-    def network_selected(self, *args, **kargs):
-        print args
-        print kargs
+    def please_connect(self, signal):
+        print "Requested connection %s" % signal.ssid
+        if not signal.has_password():
+           self.get_password_for(signal)
+           signal.connect()
+
+    def get_password_for(self, signal):
+        print "Need password for ", signal.ssid
+        signal.add_password("maraca")
 
     def refresh(self):
         """Refresh."""
