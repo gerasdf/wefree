@@ -1,28 +1,41 @@
-import netifaces
-import wifi
+import NetworkManager
+from dbus import DBusException
+
+class WifiSignal(object):
+    def __init__(self, ssid, level, encrypted):
+        self.ssid  = ssid
+        self.level = level
+        self.encrypted = encrypted
+        self.passwords = []
+
+    def add_password(self, password):
+        self.passwords.append(password)
+
+    def has_password(self):
+        return 0 == len(self.passwords)
 
 class WifiInterface(object):
     """Handle the wifi stuff."""
 
     def get_signals(self):
         """Get the wifi signals."""
+        all_devs = NetworkManager.NetworkManager.GetDevices()
+
         signals = []
-        for interface in netifaces.interfaces():
+        for device in all_devs:
             try:
-                cells = wifi.Cell.all(interface)
-            except wifi.exceptions.InterfaceError:
+                access_points = device.SpecificDevice().GetAccessPoints()
+            except DBusException:
                 # not really a wifi one
                 continue
 
-            for cell in cells:  # a little hardcoded
-                # FIXME: here we need to check, even if it's encrypted,
-                # if we have the password!!
-                have_pass = not cell.encrypted
-                _vals = map(int, cell.quality.split("/"))
-                level = _vals[0] / _vals[1]
-                name = cell.ssid
+            for ap in access_points:
+                name      = ap.Ssid
+                level     = ord(ap.Strength) / 100.0
+                encrypted = ap.WpaFlags or ap.RsnFlags
+                signal = WifiSignal(name, level, encrypted)
+                signals.append(signal)
 
-                signals.append((level, name, have_pass))
         return signals
 
 

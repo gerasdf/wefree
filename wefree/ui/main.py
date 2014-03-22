@@ -50,14 +50,14 @@ class MainUI(QMainWindow):
         menu = QMenu(self)
 
         # the signals
-        for level, signal_name, have_pass in self.wifi.get_signals():
-            i = bisect(SIGNAL_BREAKPOINTS, level)
-            if have_pass:
+        for signal in self.wifi.get_signals():
+            i = bisect(SIGNAL_BREAKPOINTS, signal.level)
+            if signal.has_password():
                 fname = "signals-{}.png".format(SIGNALS_IMGS[i])
             else:
                 fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
             icon = QIcon("wefree/imgs/" + fname)
-            action = QAction(icon, signal_name, self)
+            action = QAction(icon, signal.ssid, self)
             menu.addAction(action)
 
         # the bottom part
