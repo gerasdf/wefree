@@ -1,8 +1,8 @@
-
 from __future__ import division
 
 """The main window."""
 
+import os
 import logging
 from wefree.interfaces import WifiInterfaces
 
@@ -14,10 +14,12 @@ from PyQt4.QtGui import (
     QMainWindow,
     QMessageBox,
 )
-from PyQt4.QtGui import QSystemTrayIcon, QIcon, QMenu
+from PyQt4.QtGui import QSystemTrayIcon, QIcon, QMenu, QInputDialog
 from PyQt4 import QtCore
 
 logger = logging.getLogger('wefree.main')
+
+CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 ABOUT_TEXT = u"""
 <center>
@@ -62,7 +64,7 @@ class MainUI(QMainWindow):
             else:
                 fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
 
-            icon = QIcon("wefree/imgs/" + fname)
+            icon = QIcon(os.path.join(CURRENT_PATH, "imgs", fname))
             if signal.is_connected():
                 when_triggered = lambda: None
             else:
@@ -89,12 +91,8 @@ class MainUI(QMainWindow):
 
     def get_password_for(self, signal):
         print "Need password for ", signal.ssid
-        if signal.ssid == 'DroidAP':
-            signal.add_password("droidappass")
-        elif signal.ssid == 'matanga':
-            signal.add_password("lachancha")
-        elif signal.ssid == 'AAAAP':
-            signal.add_password("12345678")
+        password, ok = QInputDialog.getText(self, 'Input Password', "Input password for '%s':" % signal.ssid)
+        signal.add_password(password)
 
     def refresh_menu_items(self):
         """Refresh."""
@@ -102,24 +100,24 @@ class MainUI(QMainWindow):
         self.sti.setContextMenu(menu)
 
     update_done_signal = QtCore.pyqtSignal()
-    
-    def update_database(self):    
+
+    def update_database(self):
         class UpdateFromServerTask(QtCore.QThread):
             update_done_signal = self.update_done_signal
             def run(self):
                 PM.get_passwords_from_server()
                 self.update_done_signal.emit()
-        
+
         self.update_done_signal.connect(self.update_database_done)
         self.update_task = UpdateFromServerTask()
         self.update_task.start()
-        
+
     def update_database_done(self):
         self.update_task = None
-        
+
     def iconize(self):
         """Show a system tray icon with a small icon."""
-        icon = QIcon("wefree/imgs/icon-192.png")
+        icon = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.png"))
         self.sti = QSystemTrayIcon(icon, self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
