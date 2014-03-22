@@ -1,6 +1,13 @@
 import NetworkManager
 from dbus import DBusException
 
+import sys
+sys.path.append('..')
+from wefree.passwords_manager import PasswordsManager
+
+PM = PasswordsManager('page.local:8000')
+PM.get_passwords_from_server()
+
 class WifiSignal(object):
     def __init__(self, device, ap):
         self.bssid = ap.HwAddress
@@ -10,6 +17,11 @@ class WifiSignal(object):
         self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
         self.db_passwords = []
         self.local_passwords = []
+
+        if self.ssid == 'asl1@pyar':
+            self.ssid = 'La Rosa Blanca'
+            self.encrypted = True
+
         self.load_local_passwords()
         self.load_db_passwords()
         print "All passwords for %s = %r" % (self.ssid, self.passwords())
@@ -41,9 +53,8 @@ class WifiSignal(object):
                 pass
 
     def load_db_passwords(self):
-        pass
-        #for password in PasswordsManager.get_passwords_for(self.bssid):
-        #    self.add_password(password)
+        for password in PM.get_passwords_for_essid(self.ssid):
+            self.add_password(password)
 
     def add_local_password(self, password):
         print "Found password %s" % password
