@@ -2,18 +2,22 @@ import NetworkManager
 from dbus import DBusException
 
 class WifiSignal(object):
-    def __init__(self, bssid, ssid, level, encrypted):
-        self.bssid = bssid
-        self.ssid  = ssid
-        self.level = level
-        self.encrypted = encrypted
+    def __init__(self, device, ap):
+        self.bssid = ap.HwAddress
+        self.ssid  = ap.Ssid
+        self.level = ord(ap.Strength) / 100.0
+        self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
+        self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
         self.passwords = []
         self.load_passwords()
 
+    def is_connected(self):
+        return self.connected
+
     def load_passwords(self):
         "Load passwords from DB or Cache"
-        for password in PasswordsManager.get_passwords_for(self.bssid):
-            self.add_password(password)
+        #for password in PasswordsManager.get_passwords_for(self.bssid):
+        #    self.add_password(password)
 
     def add_password(self, password):
         self.passwords.append(password)
@@ -48,11 +52,7 @@ class WifiInterfaces(object):
                 continue
 
             for ap in access_points:
-                bssid     = ap.HwAddress
-                name      = ap.Ssid
-                level     = ord(ap.Strength) / 100.0
-                encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
-                signal = WifiSignal(bssid, name, level, encrypted)
+                signal = WifiSignal(device, ap)
                 signals.append(signal)
 
         return signals

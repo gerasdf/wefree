@@ -57,8 +57,12 @@ class MainUI(QMainWindow):
             else:
                 fname = "signals-{}.png".format(SIGNALS_IMGS[i])
             icon = QIcon("wefree/imgs/" + fname)
+            if signal.is_connected():
+                when_triggered = lambda: None
+            else:
+                when_triggered = (lambda sign: lambda:self.please_connect(sign))(signal)
             action = QAction(
-               icon, signal.ssid, self, triggered = (lambda sign: lambda:self.please_connect(sign))(signal))
+               icon, signal.ssid, self, triggered = when_triggered)
             menu.addAction(action)
 
         # the bottom part
@@ -73,7 +77,7 @@ class MainUI(QMainWindow):
 
     def please_connect(self, signal):
         print "Requested connection %s" % signal.ssid
-        if not signal.has_password():
+        if not signal.has_password() and signal.encrypted:
            self.get_password_for(signal)
            signal.connect()
 
