@@ -4,9 +4,10 @@ from __future__ import division
 """The main window."""
 
 import logging
-from interfaces import WifiInterfaces
+from wefree.interfaces import WifiInterfaces
 
 from bisect import bisect
+from wefree.passwords_manager import PM
 
 from PyQt4.QtGui import (
     QAction,
@@ -14,7 +15,7 @@ from PyQt4.QtGui import (
     QMessageBox,
 )
 from PyQt4.QtGui import QSystemTrayIcon, QIcon, QMenu
-
+from PyQt4 import QtCore
 
 logger = logging.getLogger('wefree.main')
 
@@ -73,7 +74,7 @@ class MainUI(QMainWindow):
         # the bottom part
         menu.addSeparator()
         menu.addAction(QAction(
-            "Refresh", self, triggered=lambda: self.refresh()))
+            "Update Database", self, triggered=lambda: self.update_database()))
         menu.addAction(QAction(
             "Acerca de", self, triggered=lambda: self.open_about_dialog()))
         menu.addAction(QAction(
@@ -83,7 +84,7 @@ class MainUI(QMainWindow):
     def please_connect(self, signal):
         print "Requested connection %s" % signal.ssid
         if not signal.has_password() and signal.encrypted:
-           self.get_password_for(signal)
+            self.get_password_for(signal)
         signal.connect()
 
     def get_password_for(self, signal):
@@ -95,11 +96,27 @@ class MainUI(QMainWindow):
         elif signal.ssid == 'AAAAP':
             signal.add_password("12345678")
 
-    def refresh(self):
+    def refresh_menu_items(self):
         """Refresh."""
         menu = self.build_menu()
         self.sti.setContextMenu(menu)
 
+    update_done_signal = QtCore.pyqtSignal()
+    
+    def update_database(self):    
+        class UpdateFromServerTask(QtCore.QThread):
+            update_done_signal = self.update_done_signal
+            def run(self):
+                PM.get_passwords_from_server()
+                self.update_done_signal.emit()
+        
+        self.update_done_signal.connect(self.update_database_done)
+        self.update_task = UpdateFromServerTask()
+        self.update_task.start()
+        
+    def update_database_done(self):
+        self.update_task = None
+        
     def iconize(self):
         """Show a system tray icon with a small icon."""
         icon = QIcon("wefree/imgs/icon-192.png")

@@ -3,12 +3,8 @@ from dbus import DBusException
 
 #import sys
 #sys.path.append('..')
-from wefree.passwords_manager import PasswordsManager
+from wefree.passwords_manager import PM
 import uuid
-
-PM = PasswordsManager('page.local:8000')
-#PM.get_passwords_from_server()
-#NM = NetworkManager.NetworkManager
 
 class WifiSignal(object):
     def __init__(self, device, ap):
@@ -132,14 +128,6 @@ class WifiSignal(object):
 
 class WifiInterfaces(object):
     """Handle the wifi stuff."""
-
-    def get_ap(self, ssid):
-        signals = self.get_signals()
-        for signal in signals:
-            if ssid == signal.ssid:
-                return signal
-
-        return None
 
     def get_signals(self):
         """Get the wifi signals."""

@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+"""Script to run WeFree."""
+
+import logging
+import sys
+
+from wefree import main, logger
+
+# set up logging
+verbose = len(sys.argv) > 1 and sys.argv[1] == '-v'
+logger.set_up(verbose)
+log = logging.getLogger('wefree.init')
+
+# first of all, show the versions
+print "Running Python %s on %r" % (sys.version_info, sys.platform)
+log.info("Running Python %s on %r", sys.version_info, sys.platform)
+
+main.start()

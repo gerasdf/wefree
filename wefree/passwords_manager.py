@@ -111,6 +111,7 @@ class PasswordsManager(object):
                 except Exception as e:
                     logging.error("Error loading AP from json")
                     logging.error(e)
+        self.sync()
 
     def get_external_passwords(self, geolocation):
         position = geolocation.get_location()
@@ -158,6 +159,7 @@ class PasswordsManager(object):
     def sync(self):
         self.local_db_cache.save(self.get_all_aps())
 
+PM = PasswordsManager('page.local:8000')
 
 if __name__ == "__main__":
     pm = PasswordsManager("page.local:8000")
@@ -175,3 +177,4 @@ if __name__ == "__main__":
     geo = GeoLocation(pm)
     geo.refresh_seen_bssids(["64:70:02:9a:3d:06"])
     print geo.get_location()
+
