@@ -1,10 +1,10 @@
+import os
 import json
 import logging
+import shelve
 from collections import defaultdict, namedtuple
 from db_transport import DbTransport
 from external_db_transport import ZonaGratisBrDbTransport
-
-"~/.weefree/db"
 
 Location = namedtuple("Location", ["lat", "long"])
 
@@ -40,6 +40,7 @@ class AP(object):
     def __repr__(self):
         return "<AP %s %s>" % (self.essid, self.bssid)
 
+
 class GeoLocation(object):
     def __init__(self, password_manager=None):
         self.pm = password_manager
@@ -67,26 +68,46 @@ class GeoLocation(object):
 
         return (avg_lat, avg_long)
 
+class Database(object):
+    def __init__(self):
+        self.db = shelve.open(os.path.expanduser(("~/.wefree_db")))
+
+    def load(self):
+        return self.db.get("aps", [])
+
+    def save(self, aps):
+        self.db["aps"] = aps
+        self.db.sync()
+
 class PasswordsManager(object):
     def __init__(self, server_address):
         self.aps_by_bssid = defaultdict(list)
         self.aps_by_essid = defaultdict(list)
         self.server_transport = DbTransport(server_address=server_address)
         self.external_transport = ZonaGratisBrDbTransport()
+        self.local_db_cache = Database()
+        aps = self.local_db_cache.load()
+        for ap in aps:
+            self.load_ap(ap)
+
+    def load_ap(self, ap):
+        if ap.bssid:
+            self.aps_by_bssid[ap.bssid].append(ap)
+        if ap.essid:
+            self.aps_by_essid[ap.essid].append(ap)
 
     def get_passwords_from_server(self):
         try:
             data = self.server_transport.get_db_data().split("\n")
-        except Exception, e:
+        except Exception as e:
             logging.error(e)
         else:
             for line in data:
+                if not line:
+                    continue
                 try:
                     ap = AP.from_json(line)
-                    if ap.bssid:
-                        self.aps_by_bssid[ap.bssid].append(ap)
-                    if ap.essid:
-                        self.aps_by_essid[ap.essid].append(ap)
+                    self.load_ap(ap)
                 except Exception as e:
                     logging.error("Error loading AP from json")
                     logging.error(e)
@@ -128,13 +149,28 @@ class PasswordsManager(object):
         else:
             return self.get_passwords_for_bssid(ap.bssid)
 
+    def get_all_aps(self):
+        s = set()
+        [s.update(set(l)) for l in self.aps_by_bssid.values()]
+        [s.update(set(l)) for l in self.aps_by_essid.values()]
+        return s
+
+    def sync(self):
+        self.local_db_cache.save(self.get_all_aps())
+
 
 if __name__ == "__main__":
     pm = PasswordsManager("page.local:8000")
+    print pm.get_passwords_for_bssid("asd")
+    print pm.get_passwords_for_bssid("58:6d:8f:9d:0b:66")
+    print pm.get_passwords_for_essid("DelPilar")
+
     pm.get_passwords_from_server()
     print pm.get_passwords_for_bssid("asd")
     print pm.get_passwords_for_bssid("58:6d:8f:9d:0b:66")
     print pm.get_passwords_for_essid("DelPilar")
+
+    pm.sync()
 
     geo = GeoLocation(pm)
     geo.refresh_seen_bssids(["64:70:02:9a:3d:06"])
