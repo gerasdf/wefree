@@ -64,7 +64,6 @@ class WifiSignal(object):
         if settings.has_key('ipv4'): del settings['ipv4']
         if settings.has_key('ipv6'): del settings['ipv6']
         
-        del settings['']
         connection.Update(settings) 
         return connection
 
