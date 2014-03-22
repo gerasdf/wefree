@@ -1,0 +1,5 @@
+syntax: glob
+*.pyc
+venv/
+flask-docs
+*.sqlite3

@@ -7,7 +7,8 @@ CREATE TABLE "ap" (
 ;
 
 CREATE TABLE "report" (
-    "bssid" varchar(25) NOT NULL PRIMARY KEY,
+    "bssid" varchar(25) NOT NULL,
+    "essid" varchar(128) NOT NULL,
     "password" varchar(128) NOT NULL,
     "date" datetime NOT NULL,
     "success" bool NOT NULL
