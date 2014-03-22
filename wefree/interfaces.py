@@ -64,7 +64,6 @@ class WifiSignal(object):
             connection = NetworkManager.Settings.AddConnection(settings)
         settings = self.update_security_settings(settings, passphrase)
 
-        
         connection.Update(settings) 
         return connection
 
