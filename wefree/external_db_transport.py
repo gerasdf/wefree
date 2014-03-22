@@ -3,6 +3,21 @@ import unittest
 import requests
 import json
 
+class Mock(object):
+    last_url_made = None
+
+    @classmethod
+    def mockear_requests_get(cls, headers, text):
+        def my_get(url, *args, **kwargs):
+            class Response(object):
+                pass
+            r = Response()
+            r.headers, r.text = headers, text
+            cls.last_url_made = url
+            return r
+        requests.get = my_get
+
+
 class ZonaGratisBrDbTransport():
     base_url = 'http://www.zonagratis.com.br/api/get/hotspot/'
 
@@ -25,20 +40,6 @@ class ZonaGratisBrDbTransport():
         if (r.headers["content-type"] != "application/json"):
             raise ValueError
         return r.text
-
-class Mock(object):
-    last_url_made = None
-
-    @classmethod
-    def mockear_requests_get(cls, headers, text):
-        def my_get(url, *args, **kwargs):
-            class Response(object):
-                pass
-            r = Response()
-            r.headers, r.text = headers, text
-            cls.last_url_made = url
-            return r
-        requests.get = my_get
 
 class TestsDbTransport(unittest.TestCase):
     report_near = "{'hotspots':[{'mac':'f4:ec:38:ce:9a:98','ssid':'LaReservaAP2','lat':-38.1006252,'lon':-57.5472497,'days_ago':19,'count':1,'rating':1.0,'apk':88,'name':'','address':'Calle 1 4299-4399, Mar del Plata/Argentina - Buenos Aires','create_time':1393704587265,'last_access_time':1393797532154,'count_access':3,'likes':0,'dislikes':0,'open':true,'shared':false,'has_internet':true,'alertType':'NO_PROBLEM','score':303},{'mac':'00:0f:02:44:6f:90','ssid':'Wireless-N Router','lat':-38.08700244,'lon':-57.54191148,'days_ago':29,'count':1,'rating':1.0,'apk':122,'name':'','address':'Av Martínez de Hoz 4899-4999, Mar del Plata/Argentina - Buenos Aires','create_time':1389379651655,'last_access_time':1392888556172,'count_access':4,'likes':0,'dislikes':0,'open':true,'shared':false,'has_internet':true,'alertType':'NO_INFO','score':-1582324309}],'env':'PROD','success':true,'ms':11.985,'clock':1395444336377}"

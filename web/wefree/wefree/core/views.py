@@ -12,7 +12,7 @@ sample = {
 report_sample = {
     'essid': 'weefreenetworkwrongpassword',
     'bssid': 'A0:F3:C1:86:15:0D',
-    'password': 'wrong_password',
+    'password': ['wrong_password'],
     'success': True,
     'lat': -32.123,
     'long': 12.343
