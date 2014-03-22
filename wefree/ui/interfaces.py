@@ -8,22 +8,61 @@ class WifiSignal(object):
         self.level = ord(ap.Strength) / 100.0
         self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
         self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
-        self.passwords = []
-        self.load_passwords()
+        self.db_passwords = []
+        self.local_passwords = []
+        self.load_local_passwords()
+        self.load_db_passwords()
+        print "All passwords for %s = %r" % (self.ssid, self.passwords())
 
     def is_connected(self):
         return self.connected
 
-    def load_passwords(self):
-        "Load passwords from DB or Cache"
+    def find_connections(self):
+        answer = []
+        for connection in NetworkManager.Settings.ListConnections():
+            settings = connection.GetSettings()
+            try:
+                if settings['802-11-wireless']['ssid'] == self.ssid:
+                    answer.append(connection)
+                    print "Found connection"
+            except KeyError:
+                pass
+
+        return answer
+
+    def load_local_passwords(self):
+        connections = self.find_connections()
+        for connection in connections:
+            try:
+                secrets = connection.GetSecrets()
+                for secret in secrets['802-11-wireless-security'].values():
+                    self.add_local_password(secret)
+            except KeyError:
+                pass
+
+    def load_db_passwords(self):
+        pass
         #for password in PasswordsManager.get_passwords_for(self.bssid):
         #    self.add_password(password)
 
+    def add_local_password(self, password):
+        print "Found password %s" % password
+        self.local_passwords.append(password)
+
     def add_password(self, password):
-        self.passwords.append(password)
+        self.db_passwords.append(password)
+
+    def has_local_passwords(self):
+        return 0 != len(self.local_passwords)
+
+    def has_db_passwords(self):
+        return 0 != len(self.db_passwords)
 
     def has_password(self):
-        return 0 != len(self.passwords)
+        return self.has_local_passwords() or self.has_db_passwords()
+
+    def passwords(self):
+        return self.local_passwords + self.db_passwords
 
     def connect(self):
         print "Requested connection to %s" % self.ssid
