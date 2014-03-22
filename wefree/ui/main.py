@@ -52,10 +52,15 @@ class MainUI(QMainWindow):
         # the signals
         for signal in self.wifi.get_signals():
             i = bisect(SIGNAL_BREAKPOINTS, signal.level)
-            if signal.encrypted and not signal.has_password():
-                fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
+            if signal.encrypted:
+                lock = 'lock-'
             else:
-                fname = "signals-{}.png".format(SIGNALS_IMGS[i])
+                lock = ''
+            if not signal.encrypted or signal.has_password():
+                fname = lock+"signals-{}.png".format(SIGNALS_IMGS[i])
+            else:
+                fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
+
             icon = QIcon("wefree/imgs/" + fname)
             if signal.is_connected():
                 when_triggered = lambda: None

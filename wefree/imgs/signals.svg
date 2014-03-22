@@ -15,7 +15,7 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="signals.svg"
-   inkscape:export-filename="/home/facundo/devel/reps/wefree/wefree/imgs/signals-25.png"
+   inkscape:export-filename="/home/gera/src/python/wefree/wefree/imgs/lock.png"
    inkscape:export-xdpi="9"
    inkscape:export-ydpi="9">
   <defs
@@ -28,16 +28,16 @@
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="0.30961943"
-     inkscape:cx="862.09874"
-     inkscape:cy="89.884298"
+     inkscape:cx="1567.254"
+     inkscape:cy="46.12622"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showguides="false"
-     inkscape:window-width="1317"
-     inkscape:window-height="714"
-     inkscape:window-x="49"
-     inkscape:window-y="24"
+     inkscape:window-width="1364"
+     inkscape:window-height="721"
+     inkscape:window-x="0"
+     inkscape:window-y="22"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -73,5 +73,38 @@
        id="path3050-6"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="csssscsccccssssscccsssssccc" />
+    <rect
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:0.73885858px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2985"
+       width="90.69487"
+       height="74.342247"
+       x="477.87573"
+       y="916.78491" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff"
+       id="path3013"
+       sodipodi:cx="2344.814"
+       sodipodi:cy="433.29462"
+       sodipodi:rx="96.893143"
+       sodipodi:ry="122.73131"
+       d="m 2247.9208,433.29461 a 96.893143,122.73131 0 1 1 193.7564,3.05072"
+       transform="matrix(0.4681444,0,0,0.62226177,-574.48863,648.87653)"
+       sodipodi:start="3.1415927"
+       sodipodi:end="6.3080447"
+       sodipodi:open="true" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000"
+       id="path3013-5"
+       sodipodi:cx="2344.814"
+       sodipodi:cy="433.29462"
+       sodipodi:rx="96.893143"
+       sodipodi:ry="122.73131"
+       d="m 2247.9208,433.29461 a 96.893143,122.73131 0 1 1 193.7564,3.05072"
+       transform="matrix(0.28461784,0,0,0.50533531,-144.15283,702.15113)"
+       sodipodi:start="3.1415927"
+       sodipodi:end="6.3080447"
+       sodipodi:open="true" />
   </g>
 </svg>
