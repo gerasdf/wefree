@@ -10,7 +10,7 @@ class DbTransport(object):
     REPORT_URL = 'http://%s/report/'
 
     def __init__(self, server_address = '127.0.0.1'):
-        self.server_ip = server_address
+        self.server_address = server_address
 
     def get_db_data(self):
         try:

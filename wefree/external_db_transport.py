@@ -2,6 +2,7 @@
 import unittest
 import requests
 import json
+from base64 import decodestring
 
 class Mock(object):
     last_url_made = None
@@ -21,7 +22,7 @@ class Mock(object):
 class ZonaGratisBrDbTransport():
     base_url = 'http://www.zonagratis.com.br/api/get/hotspot/'
 
-    def get_nearby(self, lon, lat, max_results=0):
+    def get_nearby(self, lat, lon, max_results=0):
         url = self.base_url + 'nearby?lat=' + lat + '&lon=' + lon
         if max_results != 0:
             url += '&max_results=' + max_results
@@ -36,10 +37,17 @@ class ZonaGratisBrDbTransport():
         return self.get_base(url)
 
     def get_base(self, url):
-        r = requests.get(url)
-        if (r.headers["content-type"] != "application/json"):
-            raise ValueError
-        return r.text
+        return requests.get(url).text
+
+    def decode(self, encripted_and_base64):
+        encripted = decodestring(encripted_and_base64)
+        answer = ''
+        l = len(encripted)
+        key = encripted[:3]
+        for j in range(3,len(encripted)):
+            answer += chr(ord(encripted[j]) ^ ord(key[(j-3) % 3]))
+        return answer
+
 
 class TestsDbTransport(unittest.TestCase):
     report_near = "{'hotspots':[{'mac':'f4:ec:38:ce:9a:98','ssid':'LaReservaAP2','lat':-38.1006252,'lon':-57.5472497,'days_ago':19,'count':1,'rating':1.0,'apk':88,'name':'','address':'Calle 1 4299-4399, Mar del Plata/Argentina - Buenos Aires','create_time':1393704587265,'last_access_time':1393797532154,'count_access':3,'likes':0,'dislikes':0,'open':true,'shared':false,'has_internet':true,'alertType':'NO_PROBLEM','score':303},{'mac':'00:0f:02:44:6f:90','ssid':'Wireless-N Router','lat':-38.08700244,'lon':-57.54191148,'days_ago':29,'count':1,'rating':1.0,'apk':122,'name':'','address':'Av Martínez de Hoz 4899-4999, Mar del Plata/Argentina - Buenos Aires','create_time':1389379651655,'last_access_time':1392888556172,'count_access':4,'likes':0,'dislikes':0,'open':true,'shared':false,'has_internet':true,'alertType':'NO_INFO','score':-1582324309}],'env':'PROD','success':true,'ms':11.985,'clock':1395444336377}"
