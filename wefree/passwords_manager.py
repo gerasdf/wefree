@@ -159,6 +159,9 @@ class PasswordsManager(object):
     def sync(self):
         self.local_db_cache.save(self.get_all_aps())
 
+    def add_new_password(essid, geo, password):
+        passs
+
 PM = PasswordsManager('page.local:8000')
 
 if __name__ == "__main__":
