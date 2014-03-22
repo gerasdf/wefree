@@ -4,7 +4,7 @@ from __future__ import division
 """The main window."""
 
 import logging
-from interfaces import WifiInterface
+from interfaces import WifiInterfaces
 
 from bisect import bisect
 
@@ -35,7 +35,7 @@ class MainUI(QMainWindow):
     def __init__(self, app_quit):
         super(MainUI, self).__init__()
         self.app_quit = app_quit
-        self.wifi = WifiInterface()
+        self.wifi = WifiInterfaces()
 
         logger.debug("Main UI started ok")
         self.sti = None
@@ -52,12 +52,13 @@ class MainUI(QMainWindow):
         # the signals
         for signal in self.wifi.get_signals():
             i = bisect(SIGNAL_BREAKPOINTS, signal.level)
-            if signal.has_password():
-                fname = "signals-{}.png".format(SIGNALS_IMGS[i])
-            else:
+            if signal.encrypted and not signal.has_password():
                 fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
+            else:
+                fname = "signals-{}.png".format(SIGNALS_IMGS[i])
             icon = QIcon("wefree/imgs/" + fname)
-            action = QAction(icon, signal.ssid, self)
+            action = QAction(
+               icon, signal.ssid, self, triggered = self.network_selected)
             menu.addAction(action)
 
         # the bottom part
@@ -69,6 +70,10 @@ class MainUI(QMainWindow):
         menu.addAction(QAction(
             "Salir", self, triggered=self.app_quit))
         return menu
+
+    def network_selected(self, *args, **kargs):
+        print args
+        print kargs
 
     def refresh(self):
         """Refresh."""

@@ -12,10 +12,18 @@ class WifiSignal(object):
         self.passwords.append(password)
 
     def has_password(self):
-        return 0 == len(self.passwords)
+        return 0 != len(self.passwords)
 
-class WifiInterface(object):
+class WifiInterfaces(object):
     """Handle the wifi stuff."""
+
+    def get_ap(self, ssid):
+        signals = self.get_signals()
+        for signal in signals:
+            if ssid == signal.ssid:
+                return signal
+
+        return None
 
     def get_signals(self):
         """Get the wifi signals."""
@@ -32,7 +40,7 @@ class WifiInterface(object):
             for ap in access_points:
                 name      = ap.Ssid
                 level     = ord(ap.Strength) / 100.0
-                encrypted = ap.WpaFlags or ap.RsnFlags
+                encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
                 signal = WifiSignal(name, level, encrypted)
                 signals.append(signal)
 
