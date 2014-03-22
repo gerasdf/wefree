@@ -54,6 +54,8 @@ class WifiSignal(object):
 
         if len(seen) > 0:
             settings = connection.GetSettings()
+            if settings.has_key('ipv4'): del settings['ipv4']
+            if settings.has_key('ipv6'): del settings['ipv6']
         else:
             settings = {
                 '802-11-wireless': {'ssid':self.ssid},
@@ -61,8 +63,7 @@ class WifiSignal(object):
                 }
             connection = NetworkManager.Settings.AddConnection(settings)
         settings = self.update_security_settings(settings, passphrase)
-        if settings.has_key('ipv4'): del settings['ipv4']
-        if settings.has_key('ipv6'): del settings['ipv6']
+
         
         connection.Update(settings) 
         return connection
