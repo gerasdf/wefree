@@ -160,7 +160,7 @@ class PasswordsManager(object):
         self.local_db_cache.save(self.get_all_aps())
 
     def add_new_password(essid, geo, password):
-        passs
+        pass
 
 PM = PasswordsManager('page.local:8000')
 

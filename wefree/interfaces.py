@@ -4,10 +4,6 @@ from dbus import DBusException
 from wefree.passwords_manager import PM
 import uuid
 
-import dbus.mainloop.qt
-
-dbus.mainloop.qt.DBusQtMainLoop(set_as_default=True)
-
 class WifiSignal(object):
     def __init__(self, device, ap):
         self.device = device
@@ -137,7 +133,7 @@ class WifiInterfaces(object):
 
     def __init__(self):
         #NetworkManager.Settings.NewConnection.connect(self.new_connection)
-        #NetworkManager.NetworkManager.connect_to_signal(NetworkManager.Settings.NewConnection, self.new_connection)
+        NetworkManager.Settings.connect_to_signal("NewConnection", self.new_connection)
         return
     
     def new_connection(self, new):
