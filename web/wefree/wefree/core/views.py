@@ -19,7 +19,7 @@ report_sample = {
 }
 
 def index(request):
-    return HttpResponse("WeeFree")
+    return render(request, "core/index.html")
 
 def get(request):
     ret_data = ""
