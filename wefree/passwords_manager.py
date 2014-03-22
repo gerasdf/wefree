@@ -1,69 +1,141 @@
 import json
-from collections import defaultdict
+import logging
+from collections import defaultdict, namedtuple
 from db_transport import DbTransport
 from external_db_transport import ZonaGratisBrDbTransport
 
 "~/.weefree/db"
 
-class GeoLocation(object):
+Location = namedtuple("Location", ["lat", "long"])
 
-    @staticmethod
-    def get_position():
-        return (-31.05247, -64.50410)
+class AP(object):
+    def __init__(self, bssid=None, essid=None, passwords=None,
+                 locations=None, success=None):
+        self.bssid = bssid
+        self.essid = essid
+        self.passwords = passwords
+        self.locations = locations
+        self.success = success
+
+    def get_avg_location(self):
+        if not self.locations:
+            return None
+        avg_lat = sum([location.lat for location in self.locations]) / len(self.locations)
+        avg_long = sum([location.long for location in self.locations]) / len(self.locations)
+
+        return Location(lat=avg_lat, long=avg_long)
+
+    @classmethod
+    def from_json(cls, data_json):
+        ap = json.loads(data_json)
+        locations = ap.get("positions", [])
+        locations = [Location(lat=l[0], long=l[1]) for l in locations]
+
+        return AP(ap.get("bssid"), ap.get("essid"), ap.get("passwords"),
+                   locations=locations, success=True)
+
+    def __equal__(self, other):
+        return self.bssid == other.bssid and self.essid == other.essid
+
+    def __repr__(self):
+        return "<AP %s %s>" % (self.essid, self.bssid)
+
+class GeoLocation(object):
+    def __init__(self, password_manager=None):
+        self.pm = password_manager
+        self.seen_bssid = []
+
+    def refresh_seen_bssids(self, seen_bssid):
+        self.seen_bssids = seen_bssid
+
+    def get_location(self):
+        avg_lat, avg_long = 0, 0
+        seen_and_known = 0
+        for seen_bssid in self.seen_bssids:
+            aps = self.pm.aps_by_bssid.get(seen_bssid, [])
+            for ap in aps:
+                location = ap.get_avg_location()
+                if location:
+                    avg_lat += location.lat
+                    avg_long += location.long
+                seen_and_known += 1
+        if seen_and_known == 0:
+            return None
+
+        avg_lat /= seen_and_known
+        avg_long /= seen_and_known
+
+        return (avg_lat, avg_long)
 
 class PasswordsManager(object):
     def __init__(self, server_address):
-        self.state = "NOT_INITIALIZED"
         self.aps_by_bssid = defaultdict(list)
         self.aps_by_essid = defaultdict(list)
         self.server_transport = DbTransport(server_address=server_address)
         self.external_transport = ZonaGratisBrDbTransport()
 
     def get_passwords_from_server(self):
-        data = self.server_transport.get_db_data().split("\n")
-        for line in data:
-            try:
-                ap = json.loads(line)
-            except:
-                continue
-            if ap["bssid"]:
-                self.aps_by_bssid[ap["bssid"]].append(ap)
-            if ap["essid"]:
-                self.aps_by_essid[ap["essid"]].append(ap)
+        try:
+            data = self.server_transport.get_db_data().split("\n")
+        except Exception, e:
+            logging.error(e)
+        else:
+            for line in data:
+                try:
+                    ap = AP.from_json(line)
+                    if ap.bssid:
+                        self.aps_by_bssid[ap.bssid].append(ap)
+                    if ap.essid:
+                        self.aps_by_essid[ap.essid].append(ap)
+                except Exception as e:
+                    logging.error("Error loading AP from json")
+                    logging.error(e)
 
-    def get_external_passwords(self):
-        position = GeoLocation.get_position()
+    def get_external_passwords(self, geolocation):
+        position = geolocation.get_location()
         data = self.external_transport.get_nearby("%s" % position[0], "%s" % position[1])
         aps = json.loads(data)["hotspots"]
 
         self.external_aps = []
         for ap in aps:
             if not ap["open"]:
-                self.external_aps.append({
-                    "bssid": ap["mac"],
-                    "essid": ap["ssid"],
-                    "lat": ap["lat"],
-                    "long": ap["lon"],
-                    "password": self.external_transport.decode(ap["password"]),
-                    "success": True, # fixme
-                    })
+                the_ap = AP(ap["mac"], ap["ssid"], self.external_transport.decode(ap["password"]),
+                            ap["lat"], ap["lon"], success=True)
+                self.external_aps.append(the_ap)
 
     def upload_external_passwords(self):
         self.get_external_passwords()
         for ap in self.external_aps:
             self.server_transport.set_ap_on_db(json.dumps(ap))
 
-
     def get_passwords_for_bssid(self, bssid):
-        passwords = []
         aps = self.aps_by_bssid.get(bssid, None)
-        if aps:
-            [passwords.extend(ap["passwords"]) for ap in aps]
-        return passwords
+        return self._get_passwords(aps)
 
     def get_passwords_for_essid(self, essid):
-        passwords = []
         aps = self.aps_by_essid.get(essid, None)
+        return self._get_passwords(aps)
+
+    def _get_passwords(self, aps):
+        passwords = []
         if aps:
-            [passwords.extend(ap["passwords"]) for ap in aps]
+            [passwords.extend(ap.passwords) for ap in aps]
         return passwords
+
+    def get_passwords_for_ap(self, ap):
+        if ap.bssid:
+            return self.get_passwords_for_essid(ap.essid)
+        else:
+            return self.get_passwords_for_bssid(ap.bssid)
+
+
+if __name__ == "__main__":
+    pm = PasswordsManager("page.local:8000")
+    pm.get_passwords_from_server()
+    print pm.get_passwords_for_bssid("asd")
+    print pm.get_passwords_for_bssid("58:6d:8f:9d:0b:66")
+    print pm.get_passwords_for_essid("DelPilar")
+
+    geo = GeoLocation(pm)
+    geo.refresh_seen_bssids(["64:70:02:9a:3d:06"])
+    print geo.get_location()
