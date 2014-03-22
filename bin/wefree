@@ -6,21 +6,25 @@ import logging
 import sys
 import os
 
-project_basedir = os.path.abspath(os.path.dirname(os.path.dirname(
-                                        os.path.realpath(sys.argv[0]))))
+def main():
+    project_basedir = os.path.abspath(os.path.dirname(os.path.dirname(
+                                            os.path.realpath(sys.argv[0]))))
+    
+    if project_basedir not in sys.path:
+        sys.path.insert(0, project_basedir)
+    
+    from wefree import main, logger
+    
+    # set up logging
+    verbose = len(sys.argv) > 1 and sys.argv[1] == '-v'
+    logger.set_up(verbose)
+    log = logging.getLogger('wefree.init')
+    
+    # first of all, show the versions
+    print "Running Python %s on %r" % (sys.version_info, sys.platform)
+    log.info("Running Python %s on %r", sys.version_info, sys.platform)
+    
+    main.start()
 
-if project_basedir not in sys.path:
-    sys.path.insert(0, project_basedir)
-
-from wefree import main, logger
-
-# set up logging
-verbose = len(sys.argv) > 1 and sys.argv[1] == '-v'
-logger.set_up(verbose)
-log = logging.getLogger('wefree.init')
-
-# first of all, show the versions
-print "Running Python %s on %r" % (sys.version_info, sys.platform)
-log.info("Running Python %s on %r", sys.version_info, sys.platform)
-
-main.start()
+if __name__ == '__main__':
+    main()

@@ -84,11 +84,16 @@ class MainUI(QMainWindow):
         print "Requested connection %s" % signal.ssid
         if not signal.has_password() and signal.encrypted:
            self.get_password_for(signal)
-           signal.connect()
+        signal.connect()
 
     def get_password_for(self, signal):
         print "Need password for ", signal.ssid
-        signal.add_password("maraca")
+        if signal.ssid == 'DroidAP':
+            signal.add_password("droidappass")
+        elif signal.ssid == 'matanga':
+            signal.add_password("lachancha")
+        elif signal.ssid == 'AAAAP':
+            signal.add_password("12345678")
 
     def refresh(self):
         """Refresh."""

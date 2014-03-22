@@ -1,19 +1,33 @@
 import NetworkManager
 from dbus import DBusException
 
+#import sys
+#sys.path.append('..')
+from wefree.passwords_manager import PasswordsManager
+import uuid
+
+PM = PasswordsManager('page.local:8000')
+#PM.get_passwords_from_server()
+#NM = NetworkManager.NetworkManager
+
 class WifiSignal(object):
     def __init__(self, device, ap):
+        self.device = device
+        self.ap     = ap
         self.bssid = ap.HwAddress
         self.ssid  = ap.Ssid
+        self.WpaFlags = ap.WpaFlags
+        self.RsnFlags = ap.RsnFlags
         self.level = ord(ap.Strength) / 100.0
         self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
         self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
         self.db_passwords = []
         self.local_passwords = []
+
         self.load_local_passwords()
         self.load_db_passwords()
         print "All passwords for %s = %r" % (self.ssid, self.passwords())
-
+        
     def is_connected(self):
         return self.connected
 
@@ -24,11 +38,32 @@ class WifiSignal(object):
             try:
                 if settings['802-11-wireless']['ssid'] == self.ssid:
                     answer.append(connection)
-                    print "Found connection"
             except KeyError:
                 pass
 
         return answer
+
+    def find_or_create_or_update_connection(self, passphrase):
+        connections = self.find_connections()
+        seen = []
+        for connection in connections:
+            seen_bssids = connection.GetSettings()
+            seen_bssids = seen_bssids.get('802-11-wireless', {})
+            seen_bssids = seen_bssids.get('seen-bssids', [])
+            if self.bssid in seen_bssids:
+                seen.append(connection)
+
+        if len(seen) > 0:
+            settings = connection.GetSettings()
+        else:
+            settings = {
+                '802-11-wireless': {'ssid':self.ssid},
+                'connection': {'id':'garola', 'type':'802-11-wireless', 'uuid':str(uuid.uuid4())},
+                }
+            connection = NetworkManager.Settings.AddConnection(settings)
+        settings = self.update_security_settings(settings, passphrase)
+        connection.Update(settings) 
+        return connection
 
     def load_local_passwords(self):
         connections = self.find_connections()
@@ -39,12 +74,13 @@ class WifiSignal(object):
                     self.add_local_password(secret)
             except KeyError:
                 pass
+            except DBusException:
+                pass
 
     def load_db_passwords(self):
-        pass
-        #for password in PasswordsManager.get_passwords_for(self.bssid):
-        #    self.add_password(password)
-
+        for password in PM.get_passwords_for_essid(self.ssid):
+            self.add_password(password)
+        
     def add_local_password(self, password):
         print "Found password %s" % password
         self.local_passwords.append(password)
@@ -64,8 +100,35 @@ class WifiSignal(object):
     def passwords(self):
         return self.local_passwords + self.db_passwords
 
+    def update_security_settings(self, settings, passphrase = ''):
+        flags = self.WpaFlags | self.RsnFlags
+
+        if flags:
+            if flags | NetworkManager.NM_802_11_AP_SEC_KEY_MGMT_PSK:
+                security = {
+                    "key-mgmt": "wpa-psk",
+                    "psk": passphrase,
+                }
+            else:
+                security = {
+                    "key": passphrase,
+                }
+            ochoonce = settings.get("802-11-wireless", {})
+            ochoonce.update({ "security": "802-11-wireless-security" })
+            settings['802-11-wireless'] = ochoonce
+            settings['802-11-wireless-security'] = security
+        return settings
+
     def connect(self):
-        print "Requested connection to %s" % self.ssid
+        if self.has_password():
+            passphrase = self.passwords()[0]
+        else:
+            passphrase = ''
+        print "Requested connection to %s with passphrase: %s" % (self.ssid, passphrase)
+
+        connection = self.find_or_create_or_update_connection(passphrase)
+        NetworkManager.NetworkManager.ActivateConnection(connection, self.device, self.ap)
+        print "Connection in progress!"
 
 class WifiInterfaces(object):
     """Handle the wifi stuff."""
@@ -80,14 +143,18 @@ class WifiInterfaces(object):
 
     def get_signals(self):
         """Get the wifi signals."""
+
         all_devs = NetworkManager.NetworkManager.GetDevices()
 
         signals = []
         for device in all_devs:
             try:
-                access_points = device.SpecificDevice().GetAccessPoints()
+                dev = device.SpecificDevice()
+                # dev.RequestScan({})
+                access_points = dev.GetAccessPoints()
             except DBusException:
                 # not really a wifi one
+                # we could check the Type, but this is just fine
                 continue
 
             for ap in access_points:
