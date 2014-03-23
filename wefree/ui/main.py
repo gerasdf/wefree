@@ -144,7 +144,6 @@ class MainUI(QMainWindow):
         d = AddPasswordDialog(self, signal)
         d.show()
 
-
     def rescan_networks(self):
         self.wifi.force_rescan()
         
@@ -179,7 +178,7 @@ class MainUI(QMainWindow):
 
     def iconize(self):
         """Show a system tray icon with a small icon."""
-        self.icon1 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.png"))
+        self.icon1 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.3.png"))
         self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
         self.icon3 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.old.png"))
         self.sti = QSystemTrayIcon(self.icon1, self)
