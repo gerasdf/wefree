@@ -52,6 +52,7 @@ class WifiSignal(object):
                 seen.append(connection)
 
         if len(seen) > 0:
+            connections = connections[0]
             settings = connection.GetSettings()
             if settings.has_key('ipv4'): del settings['ipv4']
             if settings.has_key('ipv6'): del settings['ipv6']
@@ -62,7 +63,6 @@ class WifiSignal(object):
                 }
             connection = NetworkManager.Settings.AddConnection(settings)
         settings = self.update_security_settings(settings, passphrase)
-        settings['connection']['WeFree'] = 'PendingSubmit'
         connection.Update(settings)
         return connection
 
