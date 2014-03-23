@@ -15,4 +15,25 @@ log = logging.getLogger('wefree.init')
 # first of all, show the versions
 log.info("Running Python %s on %r" % (sys.version_info, sys.platform))
 
+if len(sys.argv) > 1 and sys.argv[1] == '--cleanup':
+    import NetworkManager
+    NetworkManager.Settings.ListConnections()
+    connections = NetworkManager.Settings.ListConnections()
+    for con in connections:
+        try:
+            essid = con.GetSettings()["connection"]['id']
+
+            if "WeFree" in essid:
+                print "deleting %s" % essid
+                con.Delete()
+        except:
+            pass
+
+    from wefree.passwords_manager import Database
+    db = Database()
+    db.clean()
+
+
+    sys.exit(0)
+
 main.start()

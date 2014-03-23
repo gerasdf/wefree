@@ -80,6 +80,10 @@ class Database(object):
         self.db["aps"] = aps
         self.db.sync()
 
+    def clean(self):
+        self.db["aps"] = []
+        self.db.sync()
+
 class PasswordsManager(object):
     def __init__(self, server_address):
         self.aps_by_bssid = defaultdict(list)
