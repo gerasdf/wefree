@@ -45,7 +45,7 @@ class WifiSignal(object):
             seen_bssids = connection.GetSettings()
             seen_bssids = seen_bssids.get('802-11-wireless', {})
             seen_bssids = seen_bssids.get('seen-bssids', [])
-            if self.bssid in seen_bssids:
+            if (self.bssid in seen_bssids) or not seen_bssids:
                 seen.append(connection)
 
         if len(seen) > 0:

@@ -106,9 +106,9 @@ class MainUI(QMainWindow):
         if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
             print "Connected!"
         elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
-            print "Failed :-/"
+            print "Failed :-/ (%d)" % reason
         else:
-            print '%d -> %d' % (new_state, old_state)
+            print '%d -> %d' % (old_state, new_state)
     
     update_done_signal = QtCore.pyqtSignal()
 
