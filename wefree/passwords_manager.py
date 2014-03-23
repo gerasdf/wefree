@@ -44,10 +44,10 @@ class AP(object):
 class GeoLocation(object):
     def __init__(self, password_manager=None):
         self.pm = password_manager
-        self.seen_bssid = []
+        self.seen_bssids = []
 
-    def refresh_seen_bssids(self, seen_bssid):
-        self.seen_bssids = seen_bssid
+    def refresh_seen_bssids(self, seen_bssids):
+        self.seen_bssids = seen_bssids
 
     def get_location(self):
         avg_lat, avg_long = 0, 0
@@ -159,10 +159,16 @@ class PasswordsManager(object):
     def sync(self):
         self.local_db_cache.save(self.get_all_aps())
 
+    def add_new_password(self, password, essid=None, bssid=None):
+        self.load_ap(AP(essid=essid, bssid=bssid, passwords=[password],
+                    locations=[GEO.get_location()], success=True))
+        self.sync()
+
     def add_new_password(essid, geo, password):
         pass
 
 PM = PasswordsManager('page.local:8000')
+GEO = GeoLocation(PM)
 
 if __name__ == "__main__":
     pm = PasswordsManager("page.local:8000")
