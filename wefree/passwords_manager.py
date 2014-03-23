@@ -5,6 +5,7 @@ import shelve
 from collections import defaultdict, namedtuple
 from db_transport import DbTransport
 from external_db_transport import ZonaGratisBrDbTransport
+import thread
 
 Location = namedtuple("Location", ["lat", "long"])
 
@@ -125,10 +126,9 @@ class PasswordsManager(object):
                             ap["lat"], ap["lon"], success=True)
                 self.external_aps.append(the_ap)
 
-    def upload_external_passwords(self):
-        self.get_external_passwords()
-        for ap in self.external_aps:
-            self.server_transport.set_ap_on_db(json.dumps(ap))
+    def upload_report(self, json_data):
+        thread.start_new_thread(self.server_transport.set_ap_on_db,
+                                (json_data,))
 
     def get_passwords_for_bssid(self, bssid):
         aps = self.aps_by_bssid.get(bssid, None)
@@ -160,12 +160,20 @@ class PasswordsManager(object):
         self.local_db_cache.save(self.get_all_aps())
 
     def add_new_password(self, password, essid=None, bssid=None):
-        self.load_ap(AP(essid=essid, bssid=bssid, passwords=[password],
-                    locations=[GEO.get_location()], success=True))
+        location = GEO.get_location()
+        ap = AP(essid=essid, bssid=bssid, passwords=[password],
+                locations=[location], success=True)
+        self.load_ap(ap)
         self.sync()
-
-    def add_new_password(essid, geo, password):
-        pass
+        json_data = json.dumps({
+            "essid": essid,
+            "bssid": bssid,
+            "password": password,
+            "lat": location.lat if location else 0, # FIXME
+            "long": location.long if location else 0, # FIXME
+            "success": True,
+        })
+        self.upload_report(json_data)
 
 PM = PasswordsManager('page.local:8000')
 GEO = GeoLocation(PM)
@@ -186,4 +194,8 @@ if __name__ == "__main__":
     geo = GeoLocation(pm)
     geo.refresh_seen_bssids(["64:70:02:9a:3d:06"])
     print geo.get_location()
+
+    pm.add_new_password("elpassword", essid="theessid", bssid="mac")
+    import time
+    time.sleep(3)
 
