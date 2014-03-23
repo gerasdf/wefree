@@ -18,7 +18,10 @@ class WifiSignalNetworkManager(object):
         self.RsnFlags = ap.RsnFlags
         self.level = ord(ap.Strength) / 100.0
         self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
-        self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
+        try:
+            self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
+        except AttributeError:
+            self.connected = False
         self.db_passwords = []
         self.local_passwords = []
 
@@ -130,7 +133,7 @@ class WifiSignalNetworkManager(object):
             passphrase = self.passwords()[0]
         else:
             passphrase = ''
-        print "Requested connection to %s with passphrase: %s" % (self.ssid, passphrase)
+        print "Requested connection to %s with passphrase: %r" % (self.ssid, passphrase)
 
         connection = self.find_or_create_or_update_connection(passphrase)
 
@@ -219,3 +222,8 @@ class WifiInterfacesNetworkManager(object):
             device.connect_to_signal("AccessPointRemoved", refresh_menu_items)
             device.connect_to_signal("StateChanged", device_state_changed,
                                      sender_keyword=device)
+    def force_rescan(self):
+        for device in NetworkManager.NetworkManager.GetDevices():
+            dev = device.SpecificDevice()
+            if isinstance(dev, NetworkManager.Wireless):
+                dev.RequestScan({})

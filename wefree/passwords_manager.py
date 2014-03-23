@@ -80,6 +80,10 @@ class Database(object):
         self.db["aps"] = aps
         self.db.sync()
 
+    def clean(self):
+        self.db["aps"] = []
+        self.db.sync()
+
 class PasswordsManager(object):
     def __init__(self, server_address):
         self.aps_by_bssid = defaultdict(list)
@@ -180,20 +184,20 @@ GEO = GeoLocation(PM)
 
 if __name__ == "__main__":
     pm = PasswordsManager("page.local:8000")
-    print pm.get_passwords_for_bssid("asd")
-    print pm.get_passwords_for_bssid("58:6d:8f:9d:0b:66")
-    print pm.get_passwords_for_essid("DelPilar")
+    print(pm.get_passwords_for_bssid("asd"))
+    print(pm.get_passwords_for_bssid("58:6d:8f:9d:0b:66"))
+    print(pm.get_passwords_for_essid("DelPilar"))
 
     pm.get_passwords_from_server()
-    print pm.get_passwords_for_bssid("asd")
-    print pm.get_passwords_for_bssid("58:6d:8f:9d:0b:66")
-    print pm.get_passwords_for_essid("DelPilar")
+    print(pm.get_passwords_for_bssid("asd"))
+    print(pm.get_passwords_for_bssid("58:6d:8f:9d:0b:66"))
+    print(pm.get_passwords_for_essid("DelPilar"))
 
     pm.sync()
 
     geo = GeoLocation(pm)
     geo.refresh_seen_bssids(["64:70:02:9a:3d:06"])
-    print geo.get_location()
+    print(geo.get_location())
 
     pm.add_new_password("elpassword", essid="theessid", bssid="mac")
     import time

@@ -6,12 +6,14 @@ import os
 import logging
 from bisect import bisect
 
-from PyQt4 import QtCore
+from PyQt4 import QtCore, Qt, QtGui
 from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
-    QIcon, QMenu, QInputDialog)
+    QIcon, QMenu, QInputDialog, QPushButton, QLineEdit, QDialog)
 
 from wefree.passwords_manager import PM
-from wefree.interfaces import WifiInterfacesWicd
+from wefree.interfaces import WifiInterfaces
+
+import NetworkManager
 
 logger = logging.getLogger('wefree.main')
 
@@ -28,6 +30,48 @@ Let's free the WiFi.<br/>
 SIGNALS_IMGS = ['25', '50', '75', '100']
 SIGNAL_BREAKPOINTS = [.26, .51, .76]
 
+def debug_trace():
+    '''Set a tracepoint in the Python debugger that works with Qt'''
+    from PyQt4.QtCore import pyqtRemoveInputHook
+    from ipdb import set_trace
+    pyqtRemoveInputHook()
+    set_trace()
+
+
+class AddPasswordDialog(QDialog):
+    def __init__(self, parent, signal):
+        super(AddPasswordDialog, self).__init__(parent)
+
+        self.signal = signal
+
+        self.connect_btn = QPushButton("connect")
+        self.connect_and_share_btn = QPushButton("connect and share (Free the world)")
+        self.cancel_btn = QPushButton("cancel")
+        self.input_password = QLineEdit()
+        vbox = QtGui.QVBoxLayout(self)
+        vbox.addWidget(self.input_password)
+        hbox = QtGui.QHBoxLayout()
+        hbox.addWidget(self.connect_btn)
+        hbox.addWidget(self.connect_and_share_btn)
+        hbox.addWidget(self.cancel_btn)
+        vbox.addLayout(hbox)
+
+        self.connect_btn.clicked.connect(self.on_connect)
+        self.connect_and_share_btn.clicked.connect(self.on_connect_and_share)
+        self.cancel_btn.clicked.connect(self.close)
+
+    def on_connect(self, share=False):
+        password = self.input_password.text()
+        if password:
+            self.signal.add_password(password)
+            if share:
+                PM.add_new_password(password, essid=self.signal.ssid, bssid=self.signal.bssid)
+        self.close()
+        self.signal.connect()
+
+    def on_connect_and_share(self):
+        self.on_connect(share=True)
+
 class MainUI(QMainWindow):
     """Main UI."""
 
@@ -43,7 +87,9 @@ class MainUI(QMainWindow):
 
     def open_about_dialog(self):
         """Show the about dialog."""
+        self.sti.setIcon(self.icon2)
         QMessageBox.about(self, "WeFree", ABOUT_TEXT)
+        self.sti.setIcon(self.icon1)
 
     def build_menu(self):
         """Build the menu."""
@@ -73,25 +119,32 @@ class MainUI(QMainWindow):
         # the bottom part
         menu.addSeparator()
         menu.addAction(QAction(
-            "Update Database", self, triggered=lambda: self.update_database()))
+            "Update Database", self, triggered=self.update_database))
         menu.addAction(QAction(
-            "Acerca de", self, triggered=lambda: self.open_about_dialog()))
+            "Acerca de", self, triggered=self.open_about_dialog))
+        menu.addAction(QAction(
+            "Rescan", self, triggered=self.rescan_networks))
         menu.addAction(QAction(
             "Salir", self, triggered=self.app_quit))
         return menu
 
     def please_connect(self, signal):
-        print "Requested connection %s" % signal.ssid
+        logger.debug("Requested connection %s" % signal.ssid)
         if not signal.has_password() and signal.encrypted:
             self.get_password_for(signal)
-        signal.connect()
+        else:
+            signal.connect()
 
     def get_password_for(self, signal):
-        print "Need password for ", signal.ssid
-        password, ok = QInputDialog.getText(self, 'Input Password', "Input password for '%s':" % signal.ssid)
-        signal.add_password(password)
-        PM.add_new_password(password, essid=signal.ssid, bssid=signal.bssid)
+        logger.debug("Need password for %s" % signal.ssid)
 
+        d = AddPasswordDialog(self, signal)
+        d.show()
+
+
+    def rescan_networks(self):
+        self.wifi.force_rescan()
+        
     def refresh_menu_items(self, *args):
         """Refresh."""
         menu = self.build_menu()
@@ -125,8 +178,10 @@ class MainUI(QMainWindow):
 
     def iconize(self):
         """Show a system tray icon with a small icon."""
-        icon = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.png"))
-        self.sti = QSystemTrayIcon(icon, self)
+        self.icon1 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.png"))
+        self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
+        self.icon3 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.old.png"))
+        self.sti = QSystemTrayIcon(self.icon1, self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
             return
