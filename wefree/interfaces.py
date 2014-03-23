@@ -122,14 +122,14 @@ class WifiSignal(object):
 
     def device_state_changed(self, *args):
         print args
-        
+
     def connect(self):
-        
+
         if self.has_password():
             passphrase = self.passwords()[0]
         else:
             passphrase = ''
-        print "Requested connection to %s with passphrase: %s" % (self.ssid, passphrase)
+        print "Requested connection to %s with passphrase: %r" % (self.ssid, passphrase)
 
         connection = self.find_or_create_or_update_connection(passphrase)
 
@@ -146,7 +146,7 @@ class WifiInterfaces(object):
     def new_connection(self, *args, **kargs):
         print args
         print kargs
-    
+
     def get_signals(self):
         """Get the wifi signals."""
 

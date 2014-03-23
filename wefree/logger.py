@@ -39,7 +39,6 @@ def set_up(verbose):
     """Set up the logging."""
 
     logfile = get_filename()
-    print "Saving logs to", repr(logfile)
     logfolder = os.path.dirname(logfile)
     if not os.path.exists(logfolder):
         os.makedirs(logfolder)
