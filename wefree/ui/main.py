@@ -82,7 +82,7 @@ class MainUI(QMainWindow):
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
-        
+
         for device in NetworkManager.NetworkManager.GetDevices():
             device.connect_to_signal("AccessPointAdded", self.refresh_menu_items)
             device.connect_to_signal("AccessPointRemoved", self.refresh_menu_items)
@@ -160,7 +160,7 @@ class MainUI(QMainWindow):
             print "Failed :-/ (%d)" % reason
         else:
             print '%d -> %d' % (old_state, new_state)
-    
+
     update_done_signal = QtCore.pyqtSignal()
 
     def update_database(self):
