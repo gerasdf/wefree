@@ -166,16 +166,27 @@ class PasswordsManager(object):
     def add_new_password(self, password, essid=None, bssid=None):
         location = GEO.get_location()
         ap = AP(essid=essid, bssid=bssid, passwords=[password],
-                locations=[location], success=True)
+                locations=[location], success=None)
         self.load_ap(ap)
         self.sync()
+    
+    def report_success(self, essid=None, bssid=None):
+        self.upload_ap(essid=essid, bssid=bssid, success=True)
+    
+    def upload_ap(self, essid=None, bssid=None, success=None):
+        if success is None:
+            return
+        
+        ap = AP(essid=essid, bssid=bssid, success=success)
+        passwords = get_passwords_for_ap(ap)
+        
         json_data = json.dumps({
             "essid": essid,
             "bssid": bssid,
             "password": password,
             "lat": location.lat if location else 0, # FIXME
             "long": location.long if location else 0, # FIXME
-            "success": True,
+            "success": success,
         })
         self.upload_report(json_data)
 
