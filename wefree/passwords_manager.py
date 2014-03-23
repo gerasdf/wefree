@@ -170,10 +170,7 @@ class PasswordsManager(object):
         self.load_ap(ap)
         self.sync()
     
-    def report_success(self, essid=None, bssid=None):
-        self.upload_ap(essid=essid, bssid=bssid, success=True)
-    
-    def upload_ap(self, essid=None, bssid=None, success=None):
+    def report_success(self, essid=None, bssid=None, success=None):
         if success is None:
             return
         """
