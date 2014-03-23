@@ -48,7 +48,9 @@ class MainUI(QMainWindow):
 
     def open_about_dialog(self):
         """Show the about dialog."""
+        self.sti.setIcon(self.icon2)
         QMessageBox.about(self, "WeFree", ABOUT_TEXT)
+        self.sti.setIcon(self.icon1)
 
     def build_menu(self):
         """Build the menu."""
@@ -128,8 +130,10 @@ class MainUI(QMainWindow):
 
     def iconize(self):
         """Show a system tray icon with a small icon."""
-        icon = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.png"))
-        self.sti = QSystemTrayIcon(icon, self)
+        self.icon1 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.png"))
+        self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
+        self.icon3 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.old.png"))
+        self.sti = QSystemTrayIcon(self.icon1, self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
             return

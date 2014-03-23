@@ -14,7 +14,10 @@ class WifiSignal(object):
         self.RsnFlags = ap.RsnFlags
         self.level = ord(ap.Strength) / 100.0
         self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
-        self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
+        try:
+            self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
+        except AttributeError:
+            self.connected = False
         self.db_passwords = []
         self.local_passwords = []
 
@@ -59,7 +62,7 @@ class WifiSignal(object):
                 }
             connection = NetworkManager.Settings.AddConnection(settings)
         settings = self.update_security_settings(settings, passphrase)
-
+        settings['connection']['WeFree'] = 'PendingSubmit'
         connection.Update(settings)
         return connection
 
