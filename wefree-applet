@@ -16,8 +16,4 @@ log = logging.getLogger('wefree.init')
 print "Running Python %s on %r" % (sys.version_info, sys.platform)
 log.info("Running Python %s on %r", sys.version_info, sys.platform)
 
-import dbus.mainloop.qt
-
-dbus.mainloop.qt.DBusQtMainLoop(set_as_default=True)
-
 main.start()

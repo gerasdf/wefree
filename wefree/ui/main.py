@@ -4,18 +4,15 @@ from __future__ import division
 
 import os
 import logging
+from bisect import bisect
+
+from PyQt4 import QtCore
+from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
+    QIcon, QMenu, QInputDialog)
+
+from wefree.passwords_manager import PM
 from wefree.interfaces import WifiInterfaces
 
-from bisect import bisect
-from wefree.passwords_manager import PM
-
-from PyQt4.QtGui import (
-    QAction,
-    QMainWindow,
-    QMessageBox,
-)
-from PyQt4.QtGui import QSystemTrayIcon, QIcon, QMenu, QInputDialog
-from PyQt4 import QtCore
 
 logger = logging.getLogger('wefree.main')
 
@@ -39,7 +36,6 @@ class MainUI(QMainWindow):
         super(MainUI, self).__init__()
         self.app_quit = app_quit
         self.wifi = WifiInterfaces()
-
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
@@ -93,6 +89,7 @@ class MainUI(QMainWindow):
         print "Need password for ", signal.ssid
         password, ok = QInputDialog.getText(self, 'Input Password', "Input password for '%s':" % signal.ssid)
         signal.add_password(password)
+        PM.add_new_password(password, essid=signal.ssid, bssid=signal.bssid)
 
     def refresh_menu_items(self):
         """Refresh."""

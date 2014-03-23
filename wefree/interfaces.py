@@ -20,9 +20,9 @@ class WifiSignal(object):
 
         self.load_local_passwords()
         self.load_db_passwords()
-        
+
         print "All passwords for %s = %r" % (self.ssid, self.passwords())
-        
+
     def is_connected(self):
         return self.connected
 
@@ -60,7 +60,7 @@ class WifiSignal(object):
             connection = NetworkManager.Settings.AddConnection(settings)
         settings = self.update_security_settings(settings, passphrase)
 
-        connection.Update(settings) 
+        connection.Update(settings)
         return connection
 
     def load_local_passwords(self):
@@ -78,7 +78,7 @@ class WifiSignal(object):
     def load_db_passwords(self):
         for password in PM.get_passwords_for_essid(self.ssid):
             self.add_password(password)
-        
+
     def add_local_password(self, password):
         print "Found password %s" % password
         self.local_passwords.append(password)
@@ -132,13 +132,12 @@ class WifiInterfaces(object):
     """Handle the wifi stuff."""
 
     def __init__(self):
-        #NetworkManager.Settings.NewConnection.connect(self.new_connection)
         NetworkManager.Settings.connect_to_signal("NewConnection", self.new_connection)
         return
-    
+
     def new_connection(self, new):
-        pass
-    
+        print "New!!!!!"
+
     def get_signals(self):
         """Get the wifi signals."""
 
