@@ -41,3 +41,7 @@ def report(request):
     Report.objects.get_or_create(ap=ap, password=data["password"], success=data["success"], geo_lat=data["lat"], geo_long=data["long"])
 
     return HttpResponse("")
+
+
+def comunity_crawl(request):
+    return render(request, "core/crawl.html")
