@@ -176,7 +176,7 @@ class PasswordsManager(object):
     def upload_ap(self, essid=None, bssid=None, success=None):
         if success is None:
             return
-        
+        """
         ap = AP(essid=essid, bssid=bssid, success=success)
         passwords = get_passwords_for_ap(ap)
         
@@ -189,6 +189,7 @@ class PasswordsManager(object):
             "success": success,
         })
         self.upload_report(json_data)
+        """
 
 PM = PasswordsManager('page.local:8000')
 GEO = GeoLocation(PM)
