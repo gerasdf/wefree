@@ -6,30 +6,33 @@ from external_db_transport import ZonaGratisBrDbTransport
 import logging
 import json
 import os
-from math import cos, sin
-
-def drange(start, stop, step):
-    r = start
-    while r < stop:
-        yield r
-        r += step
+from math import cos, sin, pi
+from random import uniform
+import time
 
 
 class BulkManager(object):
     def __init__(self):
-        self.server_transport = DbTransport(server_address="http://localhost:3210")
+        self.server_transport = DbTransport(server_address="localhost:3210")
         self.external_transport = ZonaGratisBrDbTransport()
 
     def streaming_external_passwords_from(self, lon, lat, radius_max=1.0):
-        radius_inc = 0.001
-        radius = 0
+        meters = 100.
+        radius = 0.1 # min .500 Km
         degree = 0.
-        degree_inc = 10.000
-        while radius < radius_max:
-            self.transport( lon+cos(degree)*radius , lat+cos(degree)*radius )
+        radius_inc = 10. / 360. # 10 Km / in 360º = 0.027 Km = 270m
+        while radius < radius_max: # radius_max = 1.0º ~100Km
+            time.sleep(3)
+            self.transport( lon+cos(degree)*radius , lat+sin(degree)*radius )
+            degree_inc = 360. * radius_inc/radius
             radius += radius_inc
             degree += degree_inc
-            degree %= 360
+            degree %= 360.
+            if degree < 0.01:
+                radius = 0.1
+                lon = uniform(-180.,180.)
+                lat = uniform(-90.,90.)
+                print "Changing to %s lat %s lon..." % (lat, lon)
     
     def transport(self, left, top):
         aps = self.get_tail(left, top)
@@ -38,20 +41,21 @@ class BulkManager(object):
     def flush_external_passwords_to_server(self, aps):
         for ap in aps:
             if not ap["open"]:
-                self.server_transport.set_ap_on_db({
-                "bssid": ap["mac"],
-                "essid": ap["ssid"],
-                "lat": ap["lat"],
-                "long": ap["lon"],
-                "password": self.external_transport.decode(ap["password"]),
-                "success": True, # fixme
-                })
+                data = {
+                    "bssid": ap["mac"],
+                    "essid": ap["ssid"],
+                    "lat": ap["lat"],
+                    "long": ap["lon"],
+                    "password": self.external_transport.decode(ap["password"]),
+                    "success": True, # fixme
+                }
+                self.server_transport.set_ap_on_db(json.dumps(data))
 
-    def get_tail(self, lower_left_lon, lower_left_lat):
-        filename = 'tails/lon%s_lat%s.tail' % (unicode(lower_left_lon).zfill(3), unicode(lower_left_lat).zfill(2))
+    def get_tail(self, lon, lat):
+        filename = 'tails/lon%s_lat%s.tail' % (unicode(lon).zfill(3), unicode(lat).zfill(2))
         if not os.path.isfile(filename):
             print "Downloading %s..." % filename
-            data = self.external_transport.get_nearby(lon=unicode(lower_left_lon),lat=unicode(lower_left_lat))
+            data = self.external_transport.get_nearby(lon=unicode(lon),lat=unicode(lat))
             with open(filename, 'w') as f:
                 f.write(data.encode('utf-8'))
             print "%s saved." % filename

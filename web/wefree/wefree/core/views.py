@@ -38,7 +38,6 @@ def report(request):
 
     ap, created = AP.objects.get_or_create(bssid=data["bssid"], essid=data["essid"])
 
-    report = Report(ap=ap, password=data["password"], success=data["success"], geo_lat=data["lat"], geo_long=data["long"])
-    report.save()
+    Report.objects.get_or_create(ap=ap, password=data["password"], success=data["success"], geo_lat=data["lat"], geo_long=data["long"])
 
     return HttpResponse("")
