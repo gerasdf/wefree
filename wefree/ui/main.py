@@ -13,7 +13,7 @@ from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
 from wefree.passwords_manager import PM
 from wefree.interfaces import WifiInterfaces
 
-import NetworkManager
+#import NetworkManager
 
 logger = logging.getLogger('wefree.main')
 
@@ -78,7 +78,7 @@ class MainUI(QMainWindow):
     def __init__(self, app_quit):
         super(MainUI, self).__init__()
         self.app_quit = app_quit
-        self.wifi = WifiInterfacesWicd()
+        self.wifi = WifiInterfaces()
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
@@ -144,7 +144,7 @@ class MainUI(QMainWindow):
 
     def rescan_networks(self):
         self.wifi.force_rescan()
-        
+
     def refresh_menu_items(self, *args):
         """Refresh."""
         menu = self.build_menu()

@@ -1,11 +1,14 @@
-#import NetworkManager
 import dbus
 from dbus import DBusException
 
 from wefree.passwords_manager import PM
 import uuid
 
-#import NetworkManager
+USE_NETWORK_MANAGER=True
+try:
+    import NetworkManager
+except DBusException:
+    USE_NETWORK_MANAGER=False
 
 
 class WifiSignalNetworkManager(object):
@@ -172,6 +175,7 @@ class WifiInterfacesWicd(object):
         )
 
     def get_signals(self):
+        self.signals = []
         for network_id in range(0, self.wireless.GetNumberOfNetworks()):
             signal = WifiSignalWicd(self.wireless, network_id)
             self.signals.append(signal)
@@ -181,6 +185,11 @@ class WifiInterfacesWicd(object):
         self.bus.add_signal_receiver(device_state_changed,
                                      'StatusChanged','org.wicd.daemon',
                                      'org.wicd.daemon', '/org/wicd/daemon')
+        self.bus.add_signal_receiver(refresh_menu_items,
+                                     'SendEndScanSignal',
+                                     'org.wicd.daemon.wireless',
+                                     'org.wicd.daemon',
+                                     '/org/wicd/daemon/wireless')
 
 
 class WifiInterfacesNetworkManager(object):
@@ -222,8 +231,17 @@ class WifiInterfacesNetworkManager(object):
             device.connect_to_signal("AccessPointRemoved", refresh_menu_items)
             device.connect_to_signal("StateChanged", device_state_changed,
                                      sender_keyword=device)
+
     def force_rescan(self):
         for device in NetworkManager.NetworkManager.GetDevices():
             dev = device.SpecificDevice()
             if isinstance(dev, NetworkManager.Wireless):
                 dev.RequestScan({})
+
+
+if USE_NETWORK_MANAGER:
+    WifiInterfaces = WifiInterfacesNetworkManager
+    WifiSignal = WifiSignalNetworkManager
+else:
+    WifiInterfaces = WifiInterfacesWicd
+    WifiSignal = WifiSignalWicd
