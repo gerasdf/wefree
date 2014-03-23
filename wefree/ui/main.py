@@ -148,19 +148,6 @@ class MainUI(QMainWindow):
         menu = self.build_menu()
         self.sti.setContextMenu(menu)
 
-    def device_state_changed(self, new_state, old_state, reason, *args, **kargs):
-        if self.pending_signal:
-            if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
-                print "Connected with %s (%s) [%s]!" % (
-                    self.pending_signal.ssid, self.pending_signal.bssid, self.pending_signal.pending_password)
-                self.pending_signal = None
-            elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
-                print "Failed connect with %s (%s) [%s] :-/ (%d)" % (
-                    self.pending_signal.ssid, self.pending_signal.bssid, self.pending_signal.pending_password, reason)
-                self.pending_signal = None
-            else:
-                print '%d -> %d' % (old_state, new_state)
-
     update_done_signal = QtCore.pyqtSignal()
 
     def update_database(self):

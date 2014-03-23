@@ -81,7 +81,7 @@ class WifiSignalNetworkManager(WifiSignalBase):
         return answer
 
     def _find_or_create_or_update_connection(self, passphrase):
-        connections = self.find_connections()
+        connections = self._find_connections()
         seen = []
         for connection in connections:
             seen_bssids = connection.GetSettings()
@@ -106,12 +106,12 @@ class WifiSignalNetworkManager(WifiSignalBase):
         return connection
 
     def _load_local_passwords(self):
-        connections = self.find_connections()
+        connections = self._find_connections()
         for connection in connections:
             try:
                 secrets = connection.GetSecrets()
                 for secret in secrets['802-11-wireless-security'].values():
-                    self.add_local_password(secret)
+                    self._add_local_password(secret)
             except KeyError:
                 pass
             except DBusException:
@@ -162,12 +162,6 @@ class WifiSignalWicd(WifiSignalBase):
     def _getProperty(self, property):
         return self.wireless.GetWirelessProperty(self.network_id, property)
 
-    def has_password(self):
-        return False
-
-    def is_connected(self):
-        return self.connected
-
 
 class WifiInterfacesWicd(object):
     def __init__(self):
@@ -202,7 +196,11 @@ class WifiInterfacesNetworkManager(object):
 
     def __init__(self):
         #NetworkManager.Settings.connect_to_signal("NewConnection", self.new_connection)
-        pass
+        self.pending_signal = None
+
+    def connect(self, signal):
+        self.pending_signal = signal
+        signal.connect()
 
     def new_connection(self, *args, **kargs):
         print args
@@ -230,12 +228,26 @@ class WifiInterfacesNetworkManager(object):
 
         return signals
 
+    def device_state_changed(self, new_state, old_state, reason, *args, **kargs):
+        if self.pending_signal:
+            if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
+                PM.report_success(self.pending_signal.essid, self.pending_signal.bssid, self.pending_signal.success)
+                
+                print "Connected with %s (%s) [%s]!" % (
+                    self.pending_signal.ssid, self.pending_signal.bssid, self.pending_signal.pending_password)
+                self.pending_signal = None
+            elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
+                print "Failed connect with %s (%s) [%s] :-/ (%d)" % (
+                    self.pending_signal.ssid, self.pending_signal.bssid, self.pending_signal.pending_password, reason)
+                self.pending_signal = None
+            else:
+                print '%d -> %d' % (old_state, new_state)
+
     def connect_signals(self, refresh_menu_items, device_state_changed):
         for device in NetworkManager.NetworkManager.GetDevices():
             device.connect_to_signal("AccessPointAdded", refresh_menu_items)
             device.connect_to_signal("AccessPointRemoved", refresh_menu_items)
-            device.connect_to_signal("StateChanged", device_state_changed,
-                                     sender_keyword=device)
+            device.connect_to_signal("StateChanged", self.device_state_changed, sender_keyword=device)
 
     def force_rescan(self):
         for device in NetworkManager.NetworkManager.GetDevices():
