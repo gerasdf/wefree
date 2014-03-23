@@ -59,6 +59,7 @@ class AddPasswordDialog(QDialog):
         self.connect_btn.clicked.connect(self.on_connect)
         self.connect_and_share_btn.clicked.connect(self.on_connect_and_share)
         self.cancel_btn.clicked.connect(self.close)
+        self.pending_signal = None
 
     def on_connect(self, share=False):
         password = self.input_password.text()
@@ -127,6 +128,7 @@ class MainUI(QMainWindow):
 
     def please_connect(self, signal):
         logger.debug("Requested connection %s" % signal.ssid)
+        self.pending_signal = signal 
         if not signal.has_password() and signal.encrypted:
             self.get_password_for(signal)
         else:
@@ -135,7 +137,6 @@ class MainUI(QMainWindow):
     def get_password_for(self, signal):
         logger.debug("Need password for %s" % signal.ssid)
 
-        self.pending_signal = signal 
         d = AddPasswordDialog(self, signal)
         d.show()
 
@@ -147,15 +148,18 @@ class MainUI(QMainWindow):
         menu = self.build_menu()
         self.sti.setContextMenu(menu)
 
-    def device_state_changed(self, *args, **kargs):
-        print(args, kargs)
-        return
-        if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
-            print "Connected!"
-        elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
-            print "Failed :-/ (%d)" % reason
-        else:
-            print '%d -> %d' % (old_state, new_state)
+    def device_state_changed(self, new_state, old_state, reason, *args, **kargs):
+        if self.pending_signal:
+            if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
+                print "Connected with %s (%s) [%s]!" % (
+                    self.pending_signal.ssid, self.pending_signal.bssid, self.pending_signal.pending_password)
+                self.pending_signal = None
+            elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
+                print "Failed connect with %s (%s) [%s] :-/ (%d)" % (
+                    self.pending_signal.ssid, self.pending_signal.bssid, self.pending_signal.pending_password, reason)
+                self.pending_signal = None
+            else:
+                print '%d -> %d' % (old_state, new_state)
 
     update_done_signal = QtCore.pyqtSignal()
 
