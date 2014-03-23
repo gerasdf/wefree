@@ -165,6 +165,13 @@ class WifiSignalWicd(WifiSignalBase):
     def _getProperty(self, property):
         return self.wireless.GetWirelessProperty(self.network_id, property)
 
+    def _setProperty(self, property, value):
+        return self.wireless.SetWirelessProperty(self.network_id, property, value)
+
+    def connect(self):
+        self.wireless.ConnectWireless(self.network_id)
+
+
 class WifiInterfacesWicd(object):
     def __init__(self):
         self.signals = []
@@ -175,6 +182,9 @@ class WifiInterfacesWicd(object):
             'org.wicd.daemon.wireless'
         )
 
+    def device_state_changed(self, *args, **kargs):
+        print(args, kargs)
+
     def get_signals(self):
         self.signals = []
         for network_id in range(0, self.wireless.GetNumberOfNetworks()):
@@ -182,8 +192,8 @@ class WifiInterfacesWicd(object):
             self.signals.append(signal)
         return self.signals
 
-    def connect_signals(self, refresh_menu_items, device_state_changed):
-        self.bus.add_signal_receiver(device_state_changed,
+    def connect_signals(self, refresh_menu_items):
+        self.bus.add_signal_receiver(self.device_state_changed,
                                      'StatusChanged','org.wicd.daemon',
                                      'org.wicd.daemon', '/org/wicd/daemon')
         self.bus.add_signal_receiver(refresh_menu_items,
@@ -191,6 +201,9 @@ class WifiInterfacesWicd(object):
                                      'org.wicd.daemon.wireless',
                                      'org.wicd.daemon',
                                      '/org/wicd/daemon/wireless')
+
+    def force_rescan(self):
+        self.wireless.Scan()
 
 class WifiInterfacesNetworkManager(object):
     """Handle the wifi stuff."""
@@ -201,6 +214,10 @@ class WifiInterfacesNetworkManager(object):
     def connect(self, signal):
         self.pending_signal = signal
         signal.connect()
+
+    def new_connection(self, *args, **kargs):
+        print args
+        print kargs
 
     def get_signals(self):
         """Get the wifi signals."""
