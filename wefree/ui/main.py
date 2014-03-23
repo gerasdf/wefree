@@ -110,10 +110,7 @@ class MainUI(QMainWindow):
                 fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
 
             icon = QIcon(os.path.join(CURRENT_PATH, "imgs", fname))
-            if signal.is_connected():
-                when_triggered = lambda: None
-            else:
-                when_triggered = (lambda sign: lambda:self.please_connect(sign))(signal)
+            when_triggered = (lambda sign: lambda:self.please_connect(sign))(signal)
             action = QAction(
                icon, signal.ssid, self, triggered = when_triggered)
             menu.addAction(action)
