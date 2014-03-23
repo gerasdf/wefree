@@ -44,6 +44,7 @@ class MainUI(QMainWindow):
         for device in NetworkManager.NetworkManager.GetDevices():
             device.connect_to_signal("AccessPointAdded", self.refresh_menu_items)
             device.connect_to_signal("AccessPointRemoved", self.refresh_menu_items)
+            device.connect_to_signal("StateChanged", self.device_state_changed, sender_keyword = device)
 
     def open_about_dialog(self):
         """Show the about dialog."""
@@ -101,6 +102,14 @@ class MainUI(QMainWindow):
         menu = self.build_menu()
         self.sti.setContextMenu(menu)
 
+    def device_state_changed(self, new_state, old_state, reason, *args, **kargs):
+        if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
+            print "Connected!"
+        elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
+            print "Failed :-/"
+        else:
+            print '%d -> %d' % (new_state, old_state)
+    
     update_done_signal = QtCore.pyqtSignal()
 
     def update_database(self):

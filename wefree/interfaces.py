@@ -117,7 +117,11 @@ class WifiSignal(object):
             settings['802-11-wireless-security'] = security
         return settings
 
+    def device_state_changed(self, *args):
+        print args
+        
     def connect(self):
+        
         if self.has_password():
             passphrase = self.passwords()[0]
         else:
@@ -125,6 +129,7 @@ class WifiSignal(object):
         print "Requested connection to %s with passphrase: %s" % (self.ssid, passphrase)
 
         connection = self.find_or_create_or_update_connection(passphrase)
+
         NetworkManager.NetworkManager.ActivateConnection(connection, self.device, self.ap)
         print "Connection in progress!"
 
