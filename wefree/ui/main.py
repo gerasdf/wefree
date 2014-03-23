@@ -126,6 +126,8 @@ class MainUI(QMainWindow):
         menu.addAction(QAction(
             "Acerca de", self, triggered=self.open_about_dialog))
         menu.addAction(QAction(
+            "Rescan", self, triggered=self.rescan_networks))
+        menu.addAction(QAction(
             "Salir", self, triggered=self.app_quit))
         return menu
 
@@ -143,6 +145,9 @@ class MainUI(QMainWindow):
         d.show()
 
 
+    def rescan_networks(self):
+        self.wifi.force_rescan()
+        
     def refresh_menu_items(self, *args):
         """Refresh."""
         menu = self.build_menu()
