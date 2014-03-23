@@ -135,7 +135,7 @@ class MainUI(QMainWindow):
     def get_password_for(self, signal):
         logger.debug("Need password for %s" % signal.ssid)
 
-        self.pending_signal = signal 
+        self.pending_signal = signal
         d = AddPasswordDialog(self, signal)
         d.show()
 
@@ -150,12 +150,12 @@ class MainUI(QMainWindow):
     def device_state_changed(self, *args, **kargs):
         print(args, kargs)
         return
-        if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
-            print "Connected!"
-        elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
-            print "Failed :-/ (%d)" % reason
-        else:
-            print '%d -> %d' % (old_state, new_state)
+        #if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
+            #print "Connected!"
+        #elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
+            #print "Failed :-/ (%d)" % reason
+        #else:
+            #print '%d -> %d' % (old_state, new_state)
 
     update_done_signal = QtCore.pyqtSignal()
 

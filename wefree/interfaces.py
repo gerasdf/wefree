@@ -11,8 +11,44 @@ except DBusException:
     USE_NETWORK_MANAGER=False
 
 
-class WifiSignalNetworkManager(object):
+class WifiSignalBase(object):
+    def __init__(self):
+        self.db_passwords = []
+        self.local_passwords = []
+
+    def is_connected(self):
+        return self.connected
+
+    def add_password(self, password):
+        self.db_passwords.append(password)
+
+    def has_local_passwords(self):
+        return 0 != len(self.local_passwords)
+
+    def has_db_passwords(self):
+        return 0 != len(self.db_passwords)
+
+    def has_password(self):
+        return self.has_local_passwords() or self.has_db_passwords()
+
+    def passwords(self):
+        return self.local_passwords + self.db_passwords
+
+    def _load_db_passwords(self):
+        for password in PM.get_passwords_for_essid(self.ssid):
+            self.add_password(password)
+
+    def _add_local_password(self, password):
+        print "Found password %s" % password
+        self.local_passwords.append(password)
+
+    def connect(self):
+        raise BaseException("Not implemented")
+
+
+class WifiSignalNetworkManager(WifiSignalBase):
     def __init__(self, device, ap):
+        super(WifiSignalNetworkManager, self).__init__()
         self.device = device
         self.ap     = ap
         self.bssid = ap.HwAddress
@@ -25,16 +61,11 @@ class WifiSignalNetworkManager(object):
             self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
         except AttributeError:
             self.connected = False
-        self.db_passwords = []
-        self.local_passwords = []
 
-        self.load_local_passwords()
-        self.load_db_passwords()
+        self._load_local_passwords()
+        self._load_db_passwords()
 
         print "All passwords for %s = %r" % (self.ssid, self.passwords())
-
-    def is_connected(self):
-        return self.connected
 
     def _find_connections(self):
         answer = []
@@ -85,29 +116,6 @@ class WifiSignalNetworkManager(object):
             except DBusException:
                 pass
 
-    def _load_db_passwords(self):
-        for password in PM.get_passwords_for_essid(self.ssid):
-            self.add_password(password)
-
-    def _add_local_password(self, password):
-        print "Found password %s" % password
-        self.local_passwords.append(password)
-
-    def add_password(self, password):
-        self.db_passwords.append(password)
-
-    def has_local_passwords(self):
-        return 0 != len(self.local_passwords)
-
-    def has_db_passwords(self):
-        return 0 != len(self.db_passwords)
-
-    def has_password(self):
-        return self.has_local_passwords() or self.has_db_passwords()
-
-    def passwords(self):
-        return self.local_passwords + self.db_passwords
-
     def update_security_settings(self, settings, passphrase = ''):
         flags = self.WpaFlags | self.RsnFlags
 
@@ -127,34 +135,30 @@ class WifiSignalNetworkManager(object):
             settings['802-11-wireless-security'] = security
         return settings
 
-    def device_state_changed(self, *args):
-        print args
-
     def connect(self):
-
         if self.has_password():
             passphrase = self.passwords()[0]
         else:
             passphrase = ''
         print "Requested connection to %s with passphrase: %r" % (self.ssid, passphrase)
 
-        connection = self.find_or_create_or_update_connection(passphrase)
-
+        connection = self._find_or_create_or_update_connection(passphrase)
         NetworkManager.NetworkManager.ActivateConnection(connection, self.device, self.ap)
         print "Connection in progress!"
 
 
-class WifiSignalWicd(object):
+class WifiSignalWicd(WifiSignalBase):
     def __init__(self, wireless, network_id):
+        super(WifiSignalWicd, self).__init__()
         self.network_id = network_id
         self.wireless = wireless
-        self.bssid = self.getProperty('bssid')
-        self.ssid = self.getProperty('essid')
-        self.level = int(self.getProperty('quality'))
+        self.bssid = self._getProperty('bssid')
+        self.ssid = self._getProperty('essid')
+        self.level = int(self._getProperty('quality'))
         self.connected = self.wireless.GetApBssid() == self.bssid
-        self.encrypted = self.getProperty('encryption')
+        self.encrypted = self._getProperty('encryption')
 
-    def getProperty(self, property):
+    def _getProperty(self, property):
         return self.wireless.GetWirelessProperty(self.network_id, property)
 
     def has_password(self):
