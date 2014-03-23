@@ -1,10 +1,14 @@
-import NetworkManager
+#import NetworkManager
+import dbus
 from dbus import DBusException
 
 from wefree.passwords_manager import PM
 import uuid
 
-class WifiSignal(object):
+#import NetworkManager
+
+
+class WifiSignalNetworkManager(object):
     def __init__(self, device, ap):
         self.device = device
         self.ap     = ap
@@ -26,7 +30,7 @@ class WifiSignal(object):
     def is_connected(self):
         return self.connected
 
-    def find_connections(self):
+    def _find_connections(self):
         answer = []
         for connection in NetworkManager.Settings.ListConnections():
             settings = connection.GetSettings()
@@ -38,7 +42,7 @@ class WifiSignal(object):
 
         return answer
 
-    def find_or_create_or_update_connection(self, passphrase):
+    def _find_or_create_or_update_connection(self, passphrase):
         connections = self.find_connections()
         seen = []
         for connection in connections:
@@ -59,11 +63,11 @@ class WifiSignal(object):
                 }
             connection = NetworkManager.Settings.AddConnection(settings)
         settings = self.update_security_settings(settings, passphrase)
-
+        settings['connection']['WeFree'] = 'PendingSubmit'
         connection.Update(settings)
         return connection
 
-    def load_local_passwords(self):
+    def _load_local_passwords(self):
         connections = self.find_connections()
         for connection in connections:
             try:
@@ -75,11 +79,11 @@ class WifiSignal(object):
             except DBusException:
                 pass
 
-    def load_db_passwords(self):
+    def _load_db_passwords(self):
         for password in PM.get_passwords_for_essid(self.ssid):
             self.add_password(password)
 
-    def add_local_password(self, password):
+    def _add_local_password(self, password):
         print "Found password %s" % password
         self.local_passwords.append(password)
 
@@ -119,9 +123,9 @@ class WifiSignal(object):
 
     def device_state_changed(self, *args):
         print args
-        
+
     def connect(self):
-        
+
         if self.has_password():
             passphrase = self.passwords()[0]
         else:
@@ -133,7 +137,50 @@ class WifiSignal(object):
         NetworkManager.NetworkManager.ActivateConnection(connection, self.device, self.ap)
         print "Connection in progress!"
 
-class WifiInterfaces(object):
+
+class WifiSignalWicd(object):
+    def __init__(self, wireless, network_id):
+        self.network_id = network_id
+        self.wireless = wireless
+        self.bssid = self.getProperty('bssid')
+        self.ssid = self.getProperty('essid')
+        self.level = int(self.getProperty('quality'))
+        self.connected = self.wireless.GetApBssid() == self.bssid
+        self.encrypted = self.getProperty('encryption')
+
+    def getProperty(self, property):
+        return self.wireless.GetWirelessProperty(self.network_id, property)
+
+    def has_password(self):
+        return False
+
+    def is_connected(self):
+        return self.connected
+
+
+class WifiInterfacesWicd(object):
+    def __init__(self):
+        self.signals = []
+        self.bus = dbus.SystemBus()
+        self.wireless = dbus.Interface(
+            self.bus.get_object('org.wicd.daemon',
+                                '/org/wicd/daemon/wireless'),
+            'org.wicd.daemon.wireless'
+        )
+
+    def get_signals(self):
+        for network_id in range(0, self.wireless.GetNumberOfNetworks()):
+            signal = WifiSignalWicd(self.wireless, network_id)
+            self.signals.append(signal)
+        return self.signals
+
+    def connect_signals(self, refresh_menu_items, device_state_changed):
+        self.bus.add_signal_receiver(device_state_changed,
+                                     'StatusChanged','org.wicd.daemon',
+                                     'org.wicd.daemon', '/org/wicd/daemon')
+
+
+class WifiInterfacesNetworkManager(object):
     """Handle the wifi stuff."""
 
     def __init__(self):
@@ -143,7 +190,7 @@ class WifiInterfaces(object):
     def new_connection(self, *args, **kargs):
         print args
         print kargs
-    
+
     def get_signals(self):
         """Get the wifi signals."""
 
@@ -161,9 +208,14 @@ class WifiInterfaces(object):
                 continue
 
             for ap in access_points:
-                signal = WifiSignal(device, ap)
+                signal = WifiSignalNetworkManager(device, ap)
                 signals.append(signal)
 
         return signals
 
-
+    def connect_signals(self, refresh_menu_items, device_state_changed):
+        for device in NetworkManager.NetworkManager.GetDevices():
+            device.connect_to_signal("AccessPointAdded", refresh_menu_items)
+            device.connect_to_signal("AccessPointRemoved", refresh_menu_items)
+            device.connect_to_signal("StateChanged", device_state_changed,
+                                     sender_keyword=device)

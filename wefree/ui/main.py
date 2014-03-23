@@ -11,9 +11,7 @@ from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
     QIcon, QMenu, QInputDialog)
 
 from wefree.passwords_manager import PM
-from wefree.interfaces import WifiInterfaces
-
-import NetworkManager
+from wefree.interfaces import WifiInterfacesWicd
 
 logger = logging.getLogger('wefree.main')
 
@@ -36,15 +34,12 @@ class MainUI(QMainWindow):
     def __init__(self, app_quit):
         super(MainUI, self).__init__()
         self.app_quit = app_quit
-        self.wifi = WifiInterfaces()
+        self.wifi = WifiInterfacesWicd()
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
-        
-        for device in NetworkManager.NetworkManager.GetDevices():
-            device.connect_to_signal("AccessPointAdded", self.refresh_menu_items)
-            device.connect_to_signal("AccessPointRemoved", self.refresh_menu_items)
-            device.connect_to_signal("StateChanged", self.device_state_changed, sender_keyword = device)
+        self.wifi.connect_signals(self.refresh_menu_items,
+                                  self.device_state_changed)
 
     def open_about_dialog(self):
         """Show the about dialog."""
@@ -102,14 +97,16 @@ class MainUI(QMainWindow):
         menu = self.build_menu()
         self.sti.setContextMenu(menu)
 
-    def device_state_changed(self, new_state, old_state, reason, *args, **kargs):
+    def device_state_changed(self, *args, **kargs):
+        print(args, kargs)
+        return
         if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
             print "Connected!"
         elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
             print "Failed :-/ (%d)" % reason
         else:
             print '%d -> %d' % (old_state, new_state)
-    
+
     update_done_signal = QtCore.pyqtSignal()
 
     def update_database(self):
