@@ -227,11 +227,7 @@ class WifiInterfacesNetworkManager(object):
     def device_state_changed(self, new_state, old_state, reason, *args, **kargs):
         if self.pending_signal:
             if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
-                secrets = self.pending_signal.device.ActiveConnection.Connection.GetSecrets()
-                secrets = secrets.get('802-11-wireless-security', {})
-                password = secrets.get('psk', None)
-                if password is None:
-                    password = secrets.get('key', None)
+                password = self.pending_signal.passwords()[0]
 
                 if self.pending_signal.report_to_db:
                     PM.report_success(self.pending_signal.ssid, self.pending_signal.bssid, password, success = True)
