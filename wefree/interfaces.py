@@ -172,5 +172,6 @@ class WifiInterfaces(object):
     def force_rescan(self):
         for device in NetworkManager.NetworkManager.GetDevices():
             dev = device.SpecificDevice()
-            if hasattr(device, "WirelessCapabilities"):
+            if isinstance(dev, NetworkManager.Wireless):
                 dev.RequestScan({})
+
