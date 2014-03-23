@@ -190,7 +190,7 @@ class WifiInterfacesBase(object):
     def __init__(self):
         self.pending_signal = None
 
-    def device_state_changed(self, new_state, *args):
+    def device_state_changed(self, new_state, *args, **kwargs):
         if self.pending_signal:
             if self.CONNECTED_STATE == new_state:
                 if self.pending_signal.report_to_db:
