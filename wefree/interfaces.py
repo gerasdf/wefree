@@ -15,12 +15,15 @@ class WifiSignalBase(object):
     def __init__(self):
         self.db_passwords = []
         self.local_passwords = []
+        self.report_to_db = False
 
     def is_connected(self):
         return self.connected
 
-    def add_password(self, password):
+    def add_password(self, password, report = False):
         self.db_passwords.append(password)
+        if report:
+            self.report_to_db = True
 
     def has_local_passwords(self):
         return 0 != len(self.local_passwords)
@@ -162,7 +165,6 @@ class WifiSignalWicd(WifiSignalBase):
     def _getProperty(self, property):
         return self.wireless.GetWirelessProperty(self.network_id, property)
 
-
 class WifiInterfacesWicd(object):
     def __init__(self):
         self.signals = []
@@ -190,21 +192,15 @@ class WifiInterfacesWicd(object):
                                      'org.wicd.daemon',
                                      '/org/wicd/daemon/wireless')
 
-
 class WifiInterfacesNetworkManager(object):
     """Handle the wifi stuff."""
 
     def __init__(self):
-        #NetworkManager.Settings.connect_to_signal("NewConnection", self.new_connection)
         self.pending_signal = None
 
     def connect(self, signal):
         self.pending_signal = signal
         signal.connect()
-
-    def new_connection(self, *args, **kargs):
-        print args
-        print kargs
 
     def get_signals(self):
         """Get the wifi signals."""
@@ -231,15 +227,25 @@ class WifiInterfacesNetworkManager(object):
     def device_state_changed(self, new_state, old_state, reason, *args, **kargs):
         if self.pending_signal:
             if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
-                PM.report_success(self.pending_signal.essid, self.pending_signal.bssid, success = True)
+                secrets = self.pending_signal.device.ActiveConnection.Connection.GetSecrets()
+                secrets = secrets.get('802-11-wireless-security', {})
+                password = secrets.get('psk', None)
+                if password is None:
+                    password = secrets.get('key', None)
+
+                if self.pending_signal.report_to_db:
+                    PM.report_success(self.pending_signal.ssid, self.pending_signal.bssid, password, success = True)
+                self.pending_signal.report_to_db = False
                 self.pending_signal = None
             elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
-                PM.report_success(self.pending_signal.essid, self.pending_signal.bssid, success = False)
+                #if self.pending_signal.report_to_db:
+                #    PM.report_success(self.pending_signal.essid, self.pending_signal.bssid, password, success = False)
                 self.pending_signal = None
+                self.report_to_db = False
             else:
                 print '%d -> %d' % (old_state, new_state)
 
-    def connect_signals(self, refresh_menu_items, device_state_changed):
+    def connect_signals(self, refresh_menu_items):
         for device in NetworkManager.NetworkManager.GetDevices():
             device.connect_to_signal("AccessPointAdded", refresh_menu_items)
             device.connect_to_signal("AccessPointRemoved", refresh_menu_items)

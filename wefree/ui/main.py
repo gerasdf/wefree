@@ -39,13 +39,15 @@ def debug_trace():
 
 
 class AddPasswordDialog(QDialog):
-    def __init__(self, parent, signal):
+    def __init__(self, parent, wifi, signal):
         super(AddPasswordDialog, self).__init__(parent)
 
         self.signal = signal
+        self.wifi   = wifi
 
         self.connect_btn = QPushButton("connect")
         self.connect_and_share_btn = QPushButton("connect and share (Free the world)")
+        self.connect_and_share_btn.setDefault(True)
         self.cancel_btn = QPushButton("cancel")
         self.input_password = QLineEdit()
         vbox = QtGui.QVBoxLayout(self)
@@ -59,17 +61,16 @@ class AddPasswordDialog(QDialog):
         self.connect_btn.clicked.connect(self.on_connect)
         self.connect_and_share_btn.clicked.connect(self.on_connect_and_share)
         self.cancel_btn.clicked.connect(self.close)
-        self.pending_signal = None
 
     def on_connect(self, share=False):
         password = self.input_password.text()
-        self.signal.pending_password = password
         if password:
-            self.signal.add_password(password)
+            self.signal.add_password(password, report = True)
             if share:
                 PM.add_new_password(password, essid=self.signal.ssid, bssid=self.signal.bssid)
         self.close()
-        self.signal.connect()
+        self.signal.report_to_db = share
+        self.wifi.connect(self.signal)
 
     def on_connect_and_share(self):
         self.on_connect(share=True)
@@ -84,8 +85,7 @@ class MainUI(QMainWindow):
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
-        self.wifi.connect_signals(self.refresh_menu_items,
-                                  self.device_state_changed)
+        self.wifi.connect_signals(self.refresh_menu_items)
 
     def open_about_dialog(self):
         """Show the about dialog."""
@@ -128,16 +128,15 @@ class MainUI(QMainWindow):
 
     def please_connect(self, signal):
         logger.debug("Requested connection %s" % signal.ssid)
-        self.pending_signal = signal 
         if not signal.has_password() and signal.encrypted:
             self.get_password_for(signal)
         else:
-            signal.connect()
+            self.wifi.connect(signal)
 
     def get_password_for(self, signal):
         logger.debug("Need password for %s" % signal.ssid)
 
-        d = AddPasswordDialog(self, signal)
+        d = AddPasswordDialog(self, self.wifi, signal)
         d.show()
 
     def rescan_networks(self):
