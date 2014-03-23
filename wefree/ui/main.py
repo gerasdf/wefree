@@ -13,6 +13,7 @@ from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
 from wefree.passwords_manager import PM
 from wefree.interfaces import WifiInterfaces
 
+import NetworkManager
 
 logger = logging.getLogger('wefree.main')
 
@@ -39,6 +40,10 @@ class MainUI(QMainWindow):
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
+        
+        for device in NetworkManager.NetworkManager.GetDevices():
+            device.connect_to_signal("AccessPointAdded", self.refresh_menu_items)
+            device.connect_to_signal("AccessPointRemoved", self.refresh_menu_items)
 
     def open_about_dialog(self):
         """Show the about dialog."""
@@ -91,7 +96,7 @@ class MainUI(QMainWindow):
         signal.add_password(password)
         PM.add_new_password(password, essid=signal.ssid, bssid=signal.bssid)
 
-    def refresh_menu_items(self):
+    def refresh_menu_items(self, *args):
         """Refresh."""
         menu = self.build_menu()
         self.sti.setContextMenu(menu)

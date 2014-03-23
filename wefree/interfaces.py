@@ -132,7 +132,8 @@ class WifiInterfaces(object):
     """Handle the wifi stuff."""
 
     def __init__(self):
-        NetworkManager.Settings.connect_to_signal("NewConnection", self.new_connection)
+        #NetworkManager.Settings.connect_to_signal("NewConnection", self.new_connection)
+        pass
 
     def new_connection(self, *args, **kargs):
         print args
