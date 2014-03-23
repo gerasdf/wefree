@@ -8,9 +8,11 @@
 <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 <style>
     #map {height: 480px;}
+	.wifree {background-image: url('/static/WeFree3.svg'); height: 16px; width: 25px;}
 </style>
 <script>
  $(function() {
+	markers = {};
     decode = function(encoded) {
         encripted  = atob(encoded.trim());
         answer = "";
@@ -32,8 +34,6 @@
                 var hotspot = hotspots[prop];
                 if (hotspot["open"] === false) {
                     password =  decode(hotspot["password"]);
-                    L.marker([hotspot["lat"], hotspot["lon"]]).addTo(map)
-                             .bindPopup(hotspot["ssid"] + "\n" + password);
                     $.ajax({type: "POST", url: /report/,
                     data: JSON.stringify({
                         "bssid": hotspot["mac"],
@@ -45,6 +45,14 @@
                     }), dataType: "json",
                         contentType: "application/json",
                     });
+					hash = hotspot["lat"].toString() + hotspot["lon"].toString() + 							hotspot["ssid"].toString() + hotspot["password"].toString()
+					if (!markers[hash]) {
+                    	markers[hash] = L.marker([hotspot["lat"], hotspot["lon"]],{icon: icon})
+							.addTo(map)
+							.bindPopup(hotspot["ssid"] + "<br/>" + password);
+					} else {
+						console.log(hash + " exits!")
+					}
                 }
             }
         });
@@ -58,6 +66,7 @@
     lat = -31.0505399;
     lon = -64.5019851;
     // create a map in the "map" div, set the view to a given place and zoom
+	icon = L.divIcon({className: 'wifree', iconSize: [25, 16] });
     map = L.map('map').setView([lat, lon], 14);
 
     // add an OpenStreetMap tile layer
@@ -72,7 +81,6 @@
         $("#id_long").val(e.latlng.lng);
     });
 });
-
 
 </script>
 </head>
