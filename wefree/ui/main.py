@@ -84,8 +84,7 @@ class MainUI(QMainWindow):
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
-        self.wifi.connect_signals(self.refresh_menu_items,
-                                  self.device_state_changed)
+        self.wifi.connect_signals(self.refresh_menu_items)
 
     def open_about_dialog(self):
         """Show the about dialog."""
@@ -128,7 +127,7 @@ class MainUI(QMainWindow):
 
     def please_connect(self, signal):
         logger.debug("Requested connection %s" % signal.ssid)
-        self.pending_signal = signal 
+        self.pending_signal = signal
         if not signal.has_password() and signal.encrypted:
             self.get_password_for(signal)
         else:
