@@ -13,6 +13,7 @@ class WifiSignal(object):
         self.WpaFlags = ap.WpaFlags
         self.RsnFlags = ap.RsnFlags
         self.level = ord(ap.Strength) / 100.0
+        self.pending_password = None
         self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
         try:
             self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
