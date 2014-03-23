@@ -169,7 +169,7 @@ class PasswordsManager(object):
                 locations=[location], success=None)
         self.load_ap(ap)
         self.sync()
-    
+
     def report_success(self, essid=None, bssid=None, password=None, success=None):
         if success is None:
             return
@@ -178,7 +178,7 @@ class PasswordsManager(object):
             message = "Success!"
         else:
             message = "Failed :-("
-            
+
         print "%s Connecting with %s (%s) [%s]" % (message, essid, bssid, password)
 
         location = GEO.get_location()

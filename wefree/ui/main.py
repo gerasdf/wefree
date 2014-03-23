@@ -144,6 +144,7 @@ class MainUI(QMainWindow):
 
     def refresh_menu_items(self, *args):
         """Refresh."""
+        print("Refreshin menu")
         menu = self.build_menu()
         self.sti.setContextMenu(menu)
 

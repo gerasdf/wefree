@@ -48,6 +48,12 @@ class WifiSignalBase(object):
     def connect(self):
         raise BaseException("Not implemented")
 
+    def load_passwords(self):
+        self._load_local_passwords()
+        self._load_db_passwords()
+
+        print "All passwords for %s = %r" % (self.ssid, self.passwords())
+
 
 class WifiSignalNetworkManager(WifiSignalBase):
     def __init__(self, device, ap):
@@ -65,11 +71,7 @@ class WifiSignalNetworkManager(WifiSignalBase):
             self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
         except AttributeError:
             self.connected = False
-
-        self._load_local_passwords()
-        self._load_db_passwords()
-
-        print "All passwords for %s = %r" % (self.ssid, self.passwords())
+        self.load_passwords()
 
     def _find_connections(self):
         answer = []
@@ -156,11 +158,12 @@ class WifiSignalWicd(WifiSignalBase):
         super(WifiSignalWicd, self).__init__()
         self.network_id = network_id
         self.wireless = wireless
-        self.bssid = self._getProperty('bssid')
-        self.ssid = self._getProperty('essid')
+        self.bssid = str(self._getProperty('bssid'))
+        self.ssid = str(self._getProperty('essid'))
         self.level = int(self._getProperty('quality'))
         self.connected = self.wireless.GetApBssid() == self.bssid
         self.encrypted = self._getProperty('encryption')
+        self.load_passwords()
 
     def _getProperty(self, property):
         return self.wireless.GetWirelessProperty(self.network_id, property)
@@ -168,7 +171,18 @@ class WifiSignalWicd(WifiSignalBase):
     def _setProperty(self, property, value):
         return self.wireless.SetWirelessProperty(self.network_id, property, value)
 
+    def _load_local_passwords(self):
+        key = self._getProperty("key")
+        if key:
+            self._add_local_password(key)
+
     def connect(self):
+        if self.has_password():
+            passphrase = self.passwords()[0]
+        else:
+            passphrase = ''
+        print "Requested connection to %s with passphrase: %r" % (self.ssid, passphrase)
+        self._setProperty("key", passphrase)
         self.wireless.ConnectWireless(self.network_id)
 
 
@@ -181,9 +195,25 @@ class WifiInterfacesWicd(object):
                                 '/org/wicd/daemon/wireless'),
             'org.wicd.daemon.wireless'
         )
+        self.pending_signal = None
 
-    def device_state_changed(self, *args, **kargs):
-        print(args, kargs)
+    def device_state_changed(self, new_state, data):
+        if self.pending_signal:
+            if 2 == new_state:
+                password = self.pending_signal.passwords()[0]
+                if self.pending_signal.report_to_db:
+                    PM.report_success(self.pending_signal.ssid, self.pending_signal.bssid, password, success = True)
+                self.pending_signal.report_to_db = False
+                self.pending_signal = None
+            elif 0 == new_state:
+                self.pending_signal = None
+                self.report_to_db = False
+            else:
+                print('{!r} -> {!r}'.format(new_state, data))
+
+    def connect(self, signal):
+        self.pending_signal = signal
+        signal.connect()
 
     def get_signals(self):
         self.signals = []
@@ -203,7 +233,7 @@ class WifiInterfacesWicd(object):
                                      '/org/wicd/daemon/wireless')
 
     def force_rescan(self):
-        self.wireless.Scan()
+        self.wireless.Scan("")
 
 class WifiInterfacesNetworkManager(object):
     """Handle the wifi stuff."""
@@ -256,7 +286,7 @@ class WifiInterfacesNetworkManager(object):
                 self.pending_signal = None
                 self.report_to_db = False
             else:
-                print '%d -> %d' % (old_state, new_state)
+                print('{!r} -> {!r}'.format(old_state, new_state))
 
     def connect_signals(self, refresh_menu_items):
         for device in NetworkManager.NetworkManager.GetDevices():
