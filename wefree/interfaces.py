@@ -186,41 +186,47 @@ class WifiSignalWicd(WifiSignalBase):
         self.wireless.ConnectWireless(self.network_id)
 
 
-class WifiInterfacesWicd(object):
+class WifiInterfacesBase(object):
     def __init__(self):
-        self.signals = []
+        self.pending_signal = None
+
+    def device_state_changed(self, new_state, *args):
+        if self.pending_signal:
+            if self.CONNECTED_STATE == new_state:
+                if self.pending_signal.report_to_db:
+                    password = self.pending_signal.passwords()[0]
+                    PM.report_success(self.pending_signal.ssid, self.pending_signal.bssid, password, success = True)
+                self.pending_signal.report_to_db = False
+                self.pending_signal = None
+            elif self.FAILED_STATE == new_state:
+                self.pending_signal = None
+                self.report_to_db = False
+            else:
+                print('{!r} -> {!r}'.format(new_state, args))
+
+
+class WifiInterfacesWicd(WifiInterfacesBase):
+    def __init__(self):
+        super(WifiInterfacesWicd, self).__init__()
         self.bus = dbus.SystemBus()
         self.wireless = dbus.Interface(
             self.bus.get_object('org.wicd.daemon',
                                 '/org/wicd/daemon/wireless'),
             'org.wicd.daemon.wireless'
         )
-        self.pending_signal = None
-
-    def device_state_changed(self, new_state, data):
-        if self.pending_signal:
-            if 2 == new_state:
-                password = self.pending_signal.passwords()[0]
-                if self.pending_signal.report_to_db:
-                    PM.report_success(self.pending_signal.ssid, self.pending_signal.bssid, password, success = True)
-                self.pending_signal.report_to_db = False
-                self.pending_signal = None
-            elif 0 == new_state:
-                self.pending_signal = None
-                self.report_to_db = False
-            else:
-                print('{!r} -> {!r}'.format(new_state, data))
+        self.CONNECTED_STATE = 2
+        self.FAILED_STATE = 0
 
     def connect(self, signal):
         self.pending_signal = signal
         signal.connect()
 
     def get_signals(self):
-        self.signals = []
+        signals = []
         for network_id in range(0, self.wireless.GetNumberOfNetworks()):
             signal = WifiSignalWicd(self.wireless, network_id)
             self.signals.append(signal)
-        return self.signals
+        return signals
 
     def connect_signals(self, refresh_menu_items):
         self.bus.add_signal_receiver(self.device_state_changed,
@@ -235,25 +241,22 @@ class WifiInterfacesWicd(object):
     def force_rescan(self):
         self.wireless.Scan("")
 
-class WifiInterfacesNetworkManager(object):
+class WifiInterfacesNetworkManager(WifiInterfacesBase):
     """Handle the wifi stuff."""
 
     def __init__(self):
+        super(WifiInterfacesNetworkManager, self).__init__()
         self.pending_signal = None
+        self.CONNECTED_STATE = NetworkManager.NM_DEVICE_STATE_ACTIVATED
+        self.FAILED_STATE = NetworkManager.NM_DEVICE_STATE_FAILED
 
     def connect(self, signal):
         self.pending_signal = signal
         signal.connect()
 
-    def new_connection(self, *args, **kargs):
-        print args
-        print kargs
-
     def get_signals(self):
         """Get the wifi signals."""
-
         all_devs = NetworkManager.NetworkManager.GetDevices()
-
         signals = []
         for device in all_devs:
             try:
@@ -264,29 +267,10 @@ class WifiInterfacesNetworkManager(object):
                 # not really a wifi one
                 # we could check the Type, but this is just fine
                 continue
-
             for ap in access_points:
                 signal = WifiSignalNetworkManager(device, ap)
                 signals.append(signal)
-
         return signals
-
-    def device_state_changed(self, new_state, old_state, reason, *args, **kargs):
-        if self.pending_signal:
-            if   NetworkManager.NM_DEVICE_STATE_ACTIVATED == new_state:
-                password = self.pending_signal.passwords()[0]
-
-                if self.pending_signal.report_to_db:
-                    PM.report_success(self.pending_signal.ssid, self.pending_signal.bssid, password, success = True)
-                self.pending_signal.report_to_db = False
-                self.pending_signal = None
-            elif NetworkManager.NM_DEVICE_STATE_FAILED == new_state:
-                #if self.pending_signal.report_to_db:
-                #    PM.report_success(self.pending_signal.essid, self.pending_signal.bssid, password, success = False)
-                self.pending_signal = None
-                self.report_to_db = False
-            else:
-                print('{!r} -> {!r}'.format(old_state, new_state))
 
     def connect_signals(self, refresh_menu_items):
         for device in NetworkManager.NetworkManager.GetDevices():
