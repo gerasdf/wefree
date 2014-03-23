@@ -133,11 +133,11 @@ class WifiInterfaces(object):
 
     def __init__(self):
         NetworkManager.Settings.connect_to_signal("NewConnection", self.new_connection)
-        return
 
-    def new_connection(self, new):
-        print "New!!!!!"
-
+    def new_connection(self, *args, **kargs):
+        print args
+        print kargs
+    
     def get_signals(self):
         """Get the wifi signals."""
 
