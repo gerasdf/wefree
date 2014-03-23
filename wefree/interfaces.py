@@ -14,7 +14,10 @@ class WifiSignal(object):
         self.RsnFlags = ap.RsnFlags
         self.level = ord(ap.Strength) / 100.0
         self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
-        self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
+        try:
+            self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
+        except:
+            self.connected = False
         self.db_passwords = []
         self.local_passwords = []
 
@@ -122,7 +125,7 @@ class WifiSignal(object):
             passphrase = self.passwords()[0]
         else:
             passphrase = ''
-        print "Requested connection to %s with passphrase: %s" % (self.ssid, passphrase)
+        print "Requested connection to %s with passphrase: %r" % (self.ssid, passphrase)
 
         connection = self.find_or_create_or_update_connection(passphrase)
         NetworkManager.NetworkManager.ActivateConnection(connection, self.device, self.ap)
