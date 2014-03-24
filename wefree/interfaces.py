@@ -209,7 +209,7 @@ class WifiInterfacesBase(object):
                 self.report_to_db = False
             else:
                 print('{!r} -> {!r}'.format(new_state, args))
-        self.update_connected_state(  new_state == self.wifi.CONNECTED_STATE)
+        self.update_connected_state(new_state == self.CONNECTED_STATE)
 
 class WifiInterfacesWicd(WifiInterfacesBase):
     def __init__(self):
