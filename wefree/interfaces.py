@@ -283,7 +283,22 @@ class WifiInterfacesNetworkManager(WifiInterfacesBase):
         return signals
 
     def get_known_networks(self):
-        return [AP('BSSID', 'ESSID', 'password'), AP('BSSID2', 'ESSID2', 'password')]
+        answer = []
+        for connection in NetworkManager.Settings.ListConnections():
+            try:
+                settings  = connection.GetSettings()
+                ssid      = settings['802-11-wireless']['ssid']
+                bssid     = settings['802-11-wireless'].get('seen-bssids', [])
+                if not bssid:
+                    bssid = None
+                else:
+                    bssid = bssid[0]
+                passwords = connection.GetSecrets()['802-11-wireless-security'].values()
+                answer.append(AP(bssid, ssid, passwords))
+            except (KeyError, DBusException):
+                pass
+
+        return answer
     
     def connect_signals(self, refresh_menu_items, update_connected_state):
         self.update_connected_state = update_connected_state
