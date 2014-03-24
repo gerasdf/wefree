@@ -110,7 +110,7 @@ class MainUI(QMainWindow):
         for signal in self.wifi.get_signals():
             i = bisect(SIGNAL_BREAKPOINTS, signal.level)
             if signal.has_db_passwords():
-                icon = self.icon_wefree[SIGNALS_IMGS[i]]
+                icon = self.self.icons['wefree'][SIGNALS_IMGS[i]]
             else:
                 if signal.encrypted:
                     lock = 'lock-'
@@ -181,15 +181,26 @@ class MainUI(QMainWindow):
         self.update_task = None
 
     def load_icons(self):
-        self.icon_wefree = dict()
+        fname = lock+"signals-{}.png".format(SIGNALS_IMGS[i])
+        fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
+
+        self.icons = dict()
+        self.icons['wefree'] = dict()
+        self.icons['signal'] = dict()
+        self.icons['lock-signal'] = dict()
+        self.icons['lock-signal-unknown'] = dict()
+        
         for strength in SIGNALS_IMGS:
-            self.icon_wefree[strength]   = QIcon(os.path.join(CURRENT_PATH, "imgs","wefree-192.%d.png" % strength))
+            self.icons['wefree'][strength]                = QIcon(os.path.join(CURRENT_PATH, "imgs","wefree-192.%d.png" % strength))
+            self.icons['signal'][strength]                = QIcon(os.path.join(CURRENT_PATH, "imgs","signal.%d.png" % strength))
+            self.icons['lock-signal'][strength]           = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signal.%d.png" % strength))
+            self.icons['lock-signal-unknown'][strength]   = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signal-unknown.%d.png" % strength))
         
     def iconize(self):
         """Show a system tray icon with a small icon."""
 
         self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
-        self.sti = QSystemTrayIcon(self.icon_wefree[0], self)
+        self.sti = QSystemTrayIcon(self.self.icons['wefree'][0], self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
             return
@@ -200,6 +211,6 @@ class MainUI(QMainWindow):
 
     def update_connected_state(self, connected):
         if connected:
-            self.sti.setIcon(self.icon_wefree[100])
+            self.sti.setIcon(self.self.icons['wefree'][100])
         else:
-            self.sti.setIcon(self.icon_wefree[0])
+            self.sti.setIcon(self.self.icons['wefree'][0])
