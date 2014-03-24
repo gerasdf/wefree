@@ -85,7 +85,7 @@ class MainUI(QMainWindow):
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
-        self.wifi.connect_signals(self.refresh_menu_items, self.wifi_state_changed)
+        self.wifi.connect_signals(self.refresh_menu_items, self.update_connected_state)
 
     def open_about_dialog(self):
         """Show the about dialog."""
@@ -97,6 +97,7 @@ class MainUI(QMainWindow):
         """Build the menu."""
         menu = QMenu(self)
 
+        connected = False
         # the signals
         for signal in self.wifi.get_signals():
             i = bisect(SIGNAL_BREAKPOINTS, signal.level)
@@ -109,11 +110,16 @@ class MainUI(QMainWindow):
             else:
                 fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
 
+            if signal.is_connected():
+                connected = True
+            
             icon = QIcon(os.path.join(CURRENT_PATH, "imgs", fname))
             when_triggered = (lambda sign: lambda:self.please_connect(sign))(signal)
             action = QAction(
                icon, signal.ssid, self, triggered = when_triggered)
             menu.addAction(action)
+
+        self.update_connected_state(connected)
 
         # the bottom part
         menu.addSeparator()
@@ -175,8 +181,8 @@ class MainUI(QMainWindow):
         self.sti.setContextMenu(menu)
         self.sti.show()
 
-    def wifi_state_changed(self, new_state):
-        if   new_state == self.wifi.CONNECTED_STATE:
+    def update_connected_state(self, connected):
+        if connected:
             self.sti.setIcon(self.icon_green)
         else:
             self.sti.setIcon(self.icon_main)
