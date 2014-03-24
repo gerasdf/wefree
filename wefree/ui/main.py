@@ -213,7 +213,6 @@ class MainUI(QMainWindow):
     def iconize(self):
         """Show a system tray icon with a small icon."""
 
-        self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
         self.sti = QSystemTrayIcon(self.icons['wefree'][0], self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
