@@ -21,7 +21,7 @@ class AP(object):
     def get_avg_location(self):
         if not self.locations:
             return None
-        locations = filter(bool,  locations)
+        locations = filter(bool,  self.locations)
         avg_lat = sum([location.lat for location in self.locations]) / len(self.locations)
         avg_long = sum([location.long for location in self.locations]) / len(self.locations)
 
@@ -175,10 +175,9 @@ class PasswordsManager(object):
         self.sync()
 
     def report_success_ap(self, ap):
-        self.report_success(ap.essid, ap.bssid, ap.password[0], True)
+        self.report_success(ap.essid, ap.bssid, ap.passwords[0], True)
 
     def report_success(self, essid=None, bssid=None, password=None, success=None):
-
         if success is None:
             return
 
