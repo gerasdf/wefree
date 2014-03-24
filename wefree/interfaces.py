@@ -189,6 +189,7 @@ class WifiSignalWicd(WifiSignalBase):
 class WifiInterfacesBase(object):
     def __init__(self):
         self.pending_signal = None
+        self.wifi_state_changed = lambda x:None
 
     def device_state_changed(self, new_state, *args, **kwargs):
         if self.pending_signal:
@@ -203,7 +204,7 @@ class WifiInterfacesBase(object):
                 self.report_to_db = False
             else:
                 print('{!r} -> {!r}'.format(new_state, args))
-
+        self.wifi_state_changed(new_state)
 
 class WifiInterfacesWicd(WifiInterfacesBase):
     def __init__(self):
@@ -228,7 +229,8 @@ class WifiInterfacesWicd(WifiInterfacesBase):
             self.signals.append(signal)
         return signals
 
-    def connect_signals(self, refresh_menu_items):
+    def connect_signals(self, refresh_menu_items, wifi_state_changed):
+        self.wifi_state_changed = wifi_state_changed
         self.bus.add_signal_receiver(self.device_state_changed,
                                      'StatusChanged','org.wicd.daemon',
                                      'org.wicd.daemon', '/org/wicd/daemon')
@@ -272,7 +274,8 @@ class WifiInterfacesNetworkManager(WifiInterfacesBase):
                 signals.append(signal)
         return signals
 
-    def connect_signals(self, refresh_menu_items):
+    def connect_signals(self, refresh_menu_items, wifi_state_changed):
+        self.wifi_state_changed = wifi_state_changed
         for device in NetworkManager.NetworkManager.GetDevices():
             device.connect_to_signal("AccessPointAdded", refresh_menu_items)
             device.connect_to_signal("AccessPointRemoved", refresh_menu_items)

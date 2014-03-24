@@ -85,13 +85,13 @@ class MainUI(QMainWindow):
         logger.debug("Main UI started ok")
         self.sti = None
         self.iconize()
-        self.wifi.connect_signals(self.refresh_menu_items)
+        self.wifi.connect_signals(self.refresh_menu_items, self.wifi_state_changed)
 
     def open_about_dialog(self):
         """Show the about dialog."""
         self.sti.setIcon(self.icon2)
         QMessageBox.about(self, "WeFree", ABOUT_TEXT)
-        self.sti.setIcon(self.icon1)
+        self.sti.setIcon(self.icon_main)
 
     def build_menu(self):
         """Build the menu."""
@@ -141,7 +141,6 @@ class MainUI(QMainWindow):
 
     def refresh_menu_items(self, *args):
         """Refresh."""
-        print("Refreshin menu")
         menu = self.build_menu()
         self.sti.setContextMenu(menu)
 
@@ -159,14 +158,15 @@ class MainUI(QMainWindow):
         self.update_task.start()
 
     def update_database_done(self):
+        self.refresh_menu_items()
         self.update_task = None
 
     def iconize(self):
         """Show a system tray icon with a small icon."""
-        self.icon1 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.3.png"))
+        self.icon_main = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.3.png"))
         self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
-        self.icon3 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.old.png"))
-        self.sti = QSystemTrayIcon(self.icon1, self)
+        self.icon_green = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.3.green.png"))
+        self.sti = QSystemTrayIcon(self.icon_main, self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
             return
@@ -174,3 +174,9 @@ class MainUI(QMainWindow):
         menu = self.build_menu()
         self.sti.setContextMenu(menu)
         self.sti.show()
+
+    def wifi_state_changed(self, new_state):
+        if   new_state == self.wifi.CONNECTED_STATE:
+            self.sti.setIcon(self.icon_green)
+        else:
+            self.sti.setIcon(self.icon_main)
