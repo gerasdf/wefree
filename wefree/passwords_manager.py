@@ -21,6 +21,7 @@ class AP(object):
     def get_avg_location(self):
         if not self.locations:
             return None
+        locations = filter(bool,  locations)
         avg_lat = sum([location.lat for location in self.locations]) / len(self.locations)
         avg_long = sum([location.long for location in self.locations]) / len(self.locations)
 
@@ -66,7 +67,7 @@ class GeoLocation(object):
 
         avg_lat /= seen_and_known
         avg_long /= seen_and_known
-            
+
         return (avg_lat, avg_long)
 
 class Database(object):
@@ -168,15 +169,16 @@ class PasswordsManager(object):
         ap = AP(essid=essid, bssid=bssid, passwords=[password],
                 locations=[location], success=None)
         self.add_new_ap(ap)
-        
+
     def add_new_ap(self, ap):
         self.load_ap(ap)
         self.sync()
 
     def report_success_ap(self):
         self.report_success(ap.essid, ap.bssid, ap.password[0], True)
-        
+
     def report_success(self, essid=None, bssid=None, password=None, success=None):
+
         if success is None:
             return
 
