@@ -91,7 +91,23 @@ class MainUI(QMainWindow):
 
     def open_about_dialog(self):
         """Show the about dialog."""
-        QMessageBox.about(self, "WeFree", ABOUT_TEXT)
+        QMessageBox.about(self, "WeFreed networks Inc.", ABOUT_TEXT)
+
+    def icon_for_signal(self, signal):
+        level_index = bisect(SIGNAL_BREAKPOINTS, signal.level)
+        if signal.has_db_passwords():
+            icons = self.icons['wefree']
+        else:
+            if signal.encrypted:
+                lock = 'lock-'
+            else:
+                lock = ''
+            if not signal.encrypted or signal.has_password():
+                icons = self.icons[lock+'signals']
+            else:
+                icons = self.icons['lock-signals-unknown']
+            
+        return icons[SIGNALS_IMGS[level_index]]
 
     def build_menu(self):
         """Build the menu."""
@@ -108,19 +124,7 @@ class MainUI(QMainWindow):
         # the signals
         signal_actions = []
         for signal in self.wifi.get_signals():
-            i = bisect(SIGNAL_BREAKPOINTS, signal.level)
-            if signal.has_db_passwords():
-                icon = self.icon_wefree[SIGNALS_IMGS[i]]
-            else:
-                if signal.encrypted:
-                    lock = 'lock-'
-                else:
-                    lock = ''
-                if not signal.encrypted or signal.has_password():
-                    fname = lock+"signals-{}.png".format(SIGNALS_IMGS[i])
-                else:
-                    fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
-                icon = QIcon(os.path.join(CURRENT_PATH, "imgs", fname))
+            icon = self.icon_for_signal(signal)
 
             if signal.is_connected():
                 connected = True
@@ -181,15 +185,23 @@ class MainUI(QMainWindow):
         self.update_task = None
 
     def load_icons(self):
-        self.icon_wefree = dict()
+        self.icons = dict()
+        self.icons['wefree'] = dict()
+        self.icons['signals'] = dict()
+        self.icons['lock-signals'] = dict()
+        self.icons['lock-signals-unknown'] = dict()
+        
         for strength in SIGNALS_IMGS:
-            self.icon_wefree[strength]   = QIcon(os.path.join(CURRENT_PATH, "imgs","wefree-192.%d.png" % strength))
+            self.icons['wefree'][strength]                = QIcon(os.path.join(CURRENT_PATH, "imgs","wefree-192.%d.png" % strength))
+            self.icons['signals'][strength]                = QIcon(os.path.join(CURRENT_PATH, "imgs","signals.%d.png" % strength))
+            self.icons['lock-signals'][strength]           = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signals.%d.png" % strength))
+            self.icons['lock-signals-unknown'][strength]   = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signals-unknown.%d.png" % strength))
         
     def iconize(self):
         """Show a system tray icon with a small icon."""
 
         self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
-        self.sti = QSystemTrayIcon(self.icon_wefree[0], self)
+        self.sti = QSystemTrayIcon(self.icons['wefree'][0], self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
             return
@@ -200,6 +212,6 @@ class MainUI(QMainWindow):
 
     def update_connected_state(self, connected):
         if connected:
-            self.sti.setIcon(self.icon_wefree[100])
+            self.sti.setIcon(self.icons['wefree'][100])
         else:
-            self.sti.setIcon(self.icon_wefree[0])
+            self.sti.setIcon(self.icons['wefree'][0])
