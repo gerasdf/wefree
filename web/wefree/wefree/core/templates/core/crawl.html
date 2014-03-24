@@ -8,11 +8,11 @@
 <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 <style>
     #map {height: 480px;}
-	.wifree {background-image: url('/static/WeFree3.svg'); height: 16px; width: 25px;}
+    .wifree {background-image: url('/static/WeFree3.svg'); height: 16px; width: 25px;}
 </style>
 <script>
  $(function() {
-	markers = {};
+    markers = {};
     decode = function(encoded) {
         encripted  = atob(encoded.trim());
         answer = "";
@@ -50,7 +50,7 @@
                         markers[hash] = L.marker([hotspot["lat"], hotspot["lon"]],{icon: icon})
                             .addTo(map).bindPopup(hotspot["ssid"] + "<br/>" + password);
                     } else {
-                        console.log(hash + " exits!")
+                        console.log(hash + " exists!")
                     }
                 }
             }
@@ -63,33 +63,31 @@
         get_nearby(lat, lon);
     });
     $("#id_auto_crawl_button").click(function (asd) {
-		radius_max = 1;
-        lat = $("#id_lat").val();
-        lon = $("#id_long").val();
-        meters = 100.0;
+        radius_max = 1;
+        lat = parseFloat($("#id_lat").val());
+        lon = parseFloat($("#id_long").val());
         radius = 0.1;
         degree = 0.0;
         radius_inc = 10.0 / 360.0;
         while (radius < radius_max) {
-			window.setTimeout(function(){},1000);
-			console.log(lat+Math.sin(degree)*radius + " " + lon+Math.cos(degree)*radius);
-			/*get_nearby(lat+Math.sin(degree)*radius, lon+Math.cos(degree)*radius);*/
-            degree_inc = 360.0 * radius_inc/radius;
+            get_nearby( lat+(Math.sin(degree)*radius), lon+(Math.cos(degree)*radius) );
+            degree_inc = radius_inc/radius;
             radius += radius_inc;
             degree += degree_inc;
             degree %= 360.0;
-            if (degree < 0.01) {
+            if (degree_inc < 0.01) {
                 radius = 0.1;
                 lon = Math.random(-180.0,180.0);
                 lat = Math.floor(-90.0,90.0);
-			}
-		}
+            }
+        }
+		console.log("Finished auto crawling!")
     });
-	
+    
     lat = 0;
     lon = 0;
     // create a map in the "map" div, set the view to a given place and zoom
-	icon = L.divIcon({className: 'wifree', iconSize: [25, 16] });
+    icon = L.divIcon({className: 'wifree', iconSize: [25, 16] });
     map = L.map('map').setView([lat, lon], 3);
 
     // add an OpenStreetMap tile layer
