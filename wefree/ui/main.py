@@ -10,7 +10,7 @@ from PyQt4 import QtCore, Qt, QtGui
 from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
     QIcon, QMenu, QInputDialog, QPushButton, QLineEdit, QDialog)
 
-from wefree.passwords_manager import PM
+from wefree.passwords_manager import PM,GEO
 from wefree.interfaces import WifiInterfaces
 
 #import NetworkManager
@@ -109,7 +109,7 @@ class MainUI(QMainWindow):
             
         return icons[SIGNALS_IMGS[level_index]]
 
-    def build_menu(self):
+    def build_menu(self, signals):
         """Build the menu."""
         def action_cmp(a,b):
             aText = a.text().upper()
@@ -123,7 +123,7 @@ class MainUI(QMainWindow):
         connected = False
         # the signals
         signal_actions = []
-        for signal in self.wifi.get_signals():
+        for signal in signals:
             icon = self.icon_for_signal(signal)
 
             if signal.is_connected():
@@ -172,8 +172,13 @@ class MainUI(QMainWindow):
 
     def refresh_menu_items(self, *args):
         """Refresh."""
-        menu = self.build_menu()
+        signals = self.wifi.get_signals()
+        
+        menu = self.build_menu(signals)
         self.sti.setContextMenu(menu)
+        
+        bssids = [signal.bssid for signal in signals]
+        GEO.refresh_seen_bssids(bssids)
 
     update_done_signal = QtCore.pyqtSignal()
 
@@ -214,8 +219,7 @@ class MainUI(QMainWindow):
             logger.warning("System tray not available.")
             return
 
-        menu = self.build_menu()
-        self.sti.setContextMenu(menu)
+        self.refresh_menu_items()
         self.sti.show()
 
     def update_connected_state(self, connected):
