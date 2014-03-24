@@ -22,8 +22,8 @@ class AP(object):
         if not self.locations:
             return None
         locations = filter(bool, self.locations)
-        avg_lat = sum([location.lat for location in self.locations]) / len(self.locations)
-        avg_long = sum([location.long for location in self.locations]) / len(self.locations)
+        avg_lat = sum([location.lat for location in locations]) / len(self.locations)
+        avg_long = sum([location.long for location in locations]) / len(self.locations)
 
         return Location(lat=avg_lat, long=avg_long)
 
