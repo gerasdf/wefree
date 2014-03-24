@@ -141,9 +141,9 @@ class MainUI(QMainWindow):
         # the bottom part
         menu.addSeparator()
         menu.addAction(QAction("Update Database", self, triggered=self.update_database))
-        menu.addAction(QAction("Acerca de",       self, triggered=self.open_about_dialog))
         menu.addAction(QAction("Rescan",          self, triggered=self.rescan_networks))
-        menu.addAction(QAction("Salir",           self, triggered=self.app_quit))
+        menu.addAction(QAction("Quit",            self, triggered=self.app_quit))
+        menu.addAction(QAction("WTF?",            self, triggered=self.open_about_dialog))
         return menu
 
     def please_connect(self, signal):
