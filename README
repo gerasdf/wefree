@@ -1,5 +1,0 @@
-WeFree
-
-$ sudo apt-get install python-qt4-dbus
-$ sudo pip install python-networkmanager
-$ python ./wefree-applet
