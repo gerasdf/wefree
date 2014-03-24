@@ -19,7 +19,7 @@ class AP(object):
         self.success = success
 
     def get_avg_location(self):
-        if not self.locations:
+        if self.locations is not None:
             return None
         locations = filter(bool, self.locations)
         avg_lat = sum([location.lat for location in locations]) / len(self.locations)
@@ -174,10 +174,10 @@ class PasswordsManager(object):
         self.load_ap(ap)
         self.sync()
 
-    def report_success_ap(self, ap):
-        self.report_success(ap.essid, ap.bssid, ap.passwords[0], True)
+    def report_success_ap(self, ap, auto_location = True):
+        self.report_success(ap.essid, ap.bssid, ap.passwords[0], True, auto_location = auto_location)
 
-    def report_success(self, essid=None, bssid=None, password=None, success=None):
+    def report_success(self, essid=None, bssid=None, password=None, success=None, auto_location = True):
         if success is None:
             return
 
@@ -188,7 +188,10 @@ class PasswordsManager(object):
 
         print "%s Connecting with %s (%s) [%s]" % (message, essid, bssid, password)
 
-        location = GEO.get_location()
+        if auto_location:
+            location = GEO.get_location()
+        else:
+            location = Location(None, None)
         json_data = json.dumps({
             "essid": essid,
             "bssid": bssid,

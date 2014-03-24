@@ -165,7 +165,7 @@ class MainUI(QMainWindow):
         to_commit = ShareOwnPasswords(self, to_commit).exec_()
         for ap in to_commit:
             PM.add_new_ap(ap)
-            PM.report_success_ap(ap)
+            PM.report_success_ap(ap, auto_location = False)
     
     def rescan_networks(self):
         self.wifi.force_rescan()
