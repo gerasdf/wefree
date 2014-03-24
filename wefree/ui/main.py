@@ -130,9 +130,7 @@ class MainUI(QMainWindow):
             signal_actions.append(action)
             
         signal_actions.sort(cmp = action_cmp)
-        for action in signal_actions:
-            print action.iconText()
-            menu.addAction(action)
+        menu.addActions(signal_actions)
 
         self.update_connected_state(connected)
 
