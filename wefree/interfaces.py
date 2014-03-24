@@ -238,9 +238,9 @@ class WifiInterfacesWicd(WifiInterfacesBase):
     def get_known_networks(self):
         aps = []
         for signal in self.get_signals():
-            key = signal._getProperty("key")
+            key = str(signal._getProperty("key"))
             if key:
-                aps.append(AP(signal.bssid, signal.ssid, key))
+                aps.append(AP(signal.bssid, signal.ssid, [key]))
         return aps
 
     def connect_signals(self, refresh_menu_items, update_connected_state):

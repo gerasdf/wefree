@@ -14,7 +14,7 @@ def start():
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     from wefree.ui.main import MainUI # this must be always after QApplication
-                                       # instantiation because dbus and qt mainloop
+                                      # instantiation because dbus and qt mainloop
     MainUI(app.quit)
     
     sys.exit(app.exec_())
