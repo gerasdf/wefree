@@ -192,11 +192,11 @@ class PasswordsManager(object):
         })
         self.upload_report(json_data)
 
-PM = PasswordsManager('page.local:8000')
+PM = PasswordsManager('wefree.usla.org.ar')
 GEO = GeoLocation(PM)
 
 if __name__ == "__main__":
-    pm = PasswordsManager("page.local:8000")
+    pm = PasswordsManager("wefree.usla.org.ar")
     print(pm.get_passwords_for_bssid("asd"))
     print(pm.get_passwords_for_bssid("58:6d:8f:9d:0b:66"))
     print(pm.get_passwords_for_essid("DelPilar"))
