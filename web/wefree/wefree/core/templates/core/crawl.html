@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8" />
-<title>WeeFree</title>
-<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css"/>
-<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
-<style>
-    #map {height: 480px;}
-    .wifree {background-image: url('/static/WeFree3.svg'); height: 16px; width: 25px;}
-</style>
+{% extends "core/base.html" %}
+{% load staticfiles %}
+{% block extrahead %}
 <script>
  $(function() {
     markers = {};
@@ -102,14 +93,18 @@
 });
 
 </script>
-</head>
-<body>
-    WeeFree Crawl
+{% endblock %}
 
-    <li><label for="id_lat">Lat:</label> <input id="id_lat" name="lat" type="text" /></li>
-    <li><label for="id_long">Long:</label> <input id="id_long" name="long" type="text" /></li>
-    <li><label for="id_crawl_button">Crawl:</label><input id="id_crawl_button" type="button" value="crawl!"/><input id="id_auto_crawl_button" type="button" value="auto crawl!"/></li>
+{% block body%}
+    <div class="jumbotron">
+        <form class="form-inline">
+        <div class="form-group">
+        <label for="id_lat" class="control-label">Latitude</label> <input class="form-control" id="id_lat" name="lat" type="text" />
+        <label for="id_long" class="control-label" >Longitude</label> <input class="form-control" id="id_long" name="long" type="text" />
+        <input id="id_crawl_button" type="button" value="crawl!" class="btn btn-default"/><input class="btn btn" id="id_auto_crawl_button" type="button" value="auto crawl!"/></li>
+        </div>
+        </form>
+    </div>
 
     <div id="map"></div>
-</body>
-</html>
+{% endblock %}

@@ -1,26 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8" />
+{% extends "core/base.html" %}
 {% load staticfiles %}
-<title>WeeFree</title>
-<script src="{% static 'jquery-1.11.0.min.js' %}"></script>
-<link rel="stylesheet" href="{% static 'leaflet.css' %}"/>
-<script src="{% static 'leaflet.js' %}"></script>
-<link rel="stylesheet" href="{% static 'leaflet.markercluster.css' %}"/>
-<link rel="stylesheet" href="{% static 'leaflet.markercluster.default.css' %}"/>
-<script src="{% static 'leaflet.markercluster.min.js' %}"></script>
-</head>
-<style>
-    #map {height: 480px;}
-    .wifree {background-image: url('/static/WeFree3.svg'); height: 16px; width: 25px;}
-</style>
+
+{% block extrahead %}
 <script>
 $(function(){
     var lat = 0;
     var lon = 0;
     map = L.map('map').setView([0, 0], 3);
-	markers = new L.MarkerClusterGroup();
+    markers = new L.MarkerClusterGroup();
     icon = L.divIcon({className: 'wifree', iconSize: [25, 16] });
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
 
@@ -32,21 +19,20 @@ $(function(){
                     lat = ap.positions[0][0];
                     lon = ap.positions[0][1];
                     if(lat != null && lon !=null) {
-						markers.addLayer(
-                        	L.marker([lat, lon], {icon: icon})
+                        markers.addLayer(
+                            L.marker([lat, lon], {icon: icon})
                                 .bindPopup(ap.essid + "\n" + ap.passwords)
-						);
+                        );
                     }
                 }
             }
-			map.addLayer(markers);
+            map.addLayer(markers);
         }, "json");
 
 });
 </script>
-<body>
-	<img src="{% static 'WeFree1.svg' %}">
-    <div><a href="/crawl">crawl</a></div>
+{% endblock %}
+{% block body %}
     <div id="map"></div>
-</body>
-</html>
+{% endblock %}
+

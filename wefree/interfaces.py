@@ -7,8 +7,7 @@ import uuid
 USE_NETWORK_MANAGER=True
 try:
     import NetworkManager
-    NetworkManager.Settings.ListConnections()
-except DBusException:
+except (DBusException, ImportError):
     USE_NETWORK_MANAGER=False
 
 
