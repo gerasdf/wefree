@@ -162,7 +162,7 @@ class MainUI(QMainWindow):
 
     def share_keys(self):
         to_commit = self.wifi.get_known_networks()
-        # to_commit = some_filter(to_commit)
+        to_commit = ShareOwnPasswords(self, to_commit).exec_()
         for ap in to_commit:
             PM.add_new_ap(ap)
         PM.sync()
@@ -223,3 +223,38 @@ class MainUI(QMainWindow):
             self.sti.setIcon(self.icons['wefree'][100])
         else:
             self.sti.setIcon(self.icons['wefree'][0])
+
+class ShareOwnPasswords(QDialog):
+    def __init__(self, parent, ap_list):
+        super(ShareOwnPasswords, self).__init__(parent)
+        self.ap_checkbox = []
+        self.shared = []
+        vbox = QtGui.QVBoxLayout(self)
+        self.share_btn = QPushButton("connect and share (Free the world)")
+        self.cancel_btn = QPushButton("cancel")
+        for ap in ap_list:
+            vbox.addLayout(self.new_entry(ap))
+        hbox = QtGui.QHBoxLayout()
+        hbox.addWidget(self.share_btn)
+        hbox.addWidget(self.cancel_btn)
+        vbox.addLayout(hbox)
+        self.share_btn.clicked.connect(self.share)
+        self.cancel_btn.clicked.connect(self.close)
+
+    def exec_(self):
+        super(ShareOwnPasswords, self).exec_()
+        return self.shared
+
+    def share(self):
+        self.shared = [cb.ap for cb in self.ap_checkbox if cb.isChecked()]
+        self.close()
+
+    def new_entry(self, ap):
+        hbox = QtGui.QHBoxLayout()
+        checkbox = QtGui.QCheckBox()
+        checkbox.ap = ap
+        label = QtGui.QLabel(ap.essid)
+        hbox.addWidget(checkbox)
+        hbox.addWidget(label)
+        self.ap_checkbox.append(checkbox)
+        return hbox
