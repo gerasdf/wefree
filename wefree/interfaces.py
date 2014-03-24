@@ -74,7 +74,8 @@ class WifiSignalNetworkManager(WifiSignalBase):
         self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
         try:
             self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
-        except AttributeError:
+            { 1: 3213}[3]
+        except (DBusException, KeyError):
             self.connected = False
         self.load_passwords()
 
@@ -122,9 +123,7 @@ class WifiSignalNetworkManager(WifiSignalBase):
                 secrets = connection.GetSecrets()
                 for secret in secrets['802-11-wireless-security'].values():
                     self._add_local_password(secret)
-            except KeyError:
-                pass
-            except DBusException:
+            except (KeyError, DBusException):
                 pass
 
     def update_security_settings(self, settings, passphrase = ''):
@@ -278,7 +277,7 @@ class WifiInterfacesNetworkManager(WifiInterfacesBase):
                 dev = device.SpecificDevice()
                 # dev.RequestScan({})
                 access_points = dev.GetAccessPoints()
-            except DBusException:
+            except (DBusException, KeyError):
                 # not really a wifi one
                 # we could check the Type, but this is just fine
                 continue
@@ -314,9 +313,12 @@ class WifiInterfacesNetworkManager(WifiInterfacesBase):
 
     def force_rescan(self):
         for device in NetworkManager.NetworkManager.GetDevices():
-            dev = device.SpecificDevice()
-            if isinstance(dev, NetworkManager.Wireless):
-                dev.RequestScan('')
+            try:
+                dev = device.SpecificDevice()
+                if isinstance(dev, NetworkManager.Wireless):
+                    dev.RequestScan('')
+            except (DBusException, KeyError):
+                pass
 
 
 if USE_NETWORK_MANAGER:
