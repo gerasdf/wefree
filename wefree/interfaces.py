@@ -7,7 +7,7 @@ import uuid
 USE_NETWORK_MANAGER=True
 try:
     import NetworkManager
-    NetworkManager.Settings.ListSettings()
+    NetworkManager.Settings.ListConnections()
 except DBusException:
     USE_NETWORK_MANAGER=False
 
@@ -171,11 +171,11 @@ class WifiSignalWicd(WifiSignalBase):
         self.encrypted = self._getProperty('encryption')
         self.load_passwords()
 
-    def _getProperty(self, property):
-        return self.wireless.GetWirelessProperty(self.network_id, property)
+    def _getProperty(self, _property):
+        return self.wireless.GetWirelessProperty(self.network_id, _property)
 
-    def _setProperty(self, property, value):
-        return self.wireless.SetWirelessProperty(self.network_id, property, value)
+    def _setProperty(self, _property, value):
+        return self.wireless.SetWirelessProperty(self.network_id, _property, value)
 
     def _load_local_passwords(self):
         key = self._getProperty("key")
