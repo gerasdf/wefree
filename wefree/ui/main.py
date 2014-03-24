@@ -140,6 +140,7 @@ class MainUI(QMainWindow):
 
         # the bottom part
         menu.addSeparator()
+        menu.addAction(QAction("Share...",        self, triggered=self.share_keys))
         menu.addAction(QAction("Update Database", self, triggered=self.update_database))
         menu.addAction(QAction("Rescan",          self, triggered=self.rescan_networks))
         menu.addAction(QAction("Quit",            self, triggered=self.app_quit))
@@ -159,6 +160,9 @@ class MainUI(QMainWindow):
         d = AddPasswordDialog(self, self.wifi, signal)
         d.show()
 
+    def share_keys(self):
+        pass
+    
     def rescan_networks(self):
         self.wifi.force_rescan()
 
