@@ -95,10 +95,18 @@ class MainUI(QMainWindow):
 
     def build_menu(self):
         """Build the menu."""
+        def action_cmp(a,b):
+            aText = a.text().upper()
+            bText = b.text().upper()
+            if aText == bText: return 0
+            if aText < bText: return -1
+            return 1
+        
         menu = QMenu(self)
 
         connected = False
         # the signals
+        signal_actions = []
         for signal in self.wifi.get_signals():
             i = bisect(SIGNAL_BREAKPOINTS, signal.level)
             if signal.has_db_passwords():
@@ -119,6 +127,11 @@ class MainUI(QMainWindow):
             
             when_triggered = (lambda sign: lambda:self.please_connect(sign))(signal)
             action = QAction(icon, signal.ssid, self, triggered = when_triggered)
+            signal_actions.append(action)
+            
+        signal_actions.sort(cmp = action_cmp)
+        for action in signal_actions:
+            print action.iconText()
             menu.addAction(action)
 
         self.update_connected_state(connected)
