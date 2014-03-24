@@ -6,14 +6,14 @@ import os
 import logging
 from bisect import bisect
 
-from PyQt4 import QtCore, Qt, QtGui
+from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
-    QIcon, QMenu, QInputDialog, QPushButton, QLineEdit, QDialog)
+    QIcon, QMenu, QPushButton, QLineEdit, QDialog)
 
 from wefree.passwords_manager import PM,GEO
 from wefree.interfaces import WifiInterfaces
 
-#import NetworkManager
+import icons
 
 logger = logging.getLogger('wefree.main')
 
@@ -209,15 +209,14 @@ class MainUI(QMainWindow):
         self.icons['lock-signals-unknown'] = dict()
 
         for strength in SIGNALS_IMGS:
-            self.icons['wefree'][strength]                 = QIcon(os.path.join(CURRENT_PATH, "imgs","wefree-192.%d.png" % strength))
-            self.icons['signals'][strength]                = QIcon(os.path.join(CURRENT_PATH, "imgs","signals.%d.png" % strength))
-            self.icons['lock-signals'][strength]           = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signals.%d.png" % strength))
-            self.icons['lock-signals-unknown'][strength]   = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signals-unknown.%d.png" % strength))
+            self.icons['wefree'][strength]                 = QIcon(":/imgs/wefree-192.%d.png" % strength)
+            self.icons['signals'][strength]                = QIcon(":/imgs/signals.%d.png" % strength)
+            self.icons['lock-signals'][strength]           = QIcon(":/imgs/lock-signals.%d.png" % strength)
+            self.icons['lock-signals-unknown'][strength]   = QIcon(":/imgs/lock-signals-unknown.%d.png" % strength)
 
     def iconize(self):
         """Show a system tray icon with a small icon."""
 
-        self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
         self.sti = QSystemTrayIcon(self.icons['wefree'][0], self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")

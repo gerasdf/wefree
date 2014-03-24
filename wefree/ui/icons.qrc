@@ -1,0 +1,25 @@
+<RCC>
+  <qresource prefix="/">
+     <file>imgs/WeFree-3.svg</file>
+     <file>imgs/signals.0.png</file>
+     <file>imgs/signals.25.png</file>
+     <file>imgs/signals.50.png</file>
+     <file>imgs/signals.75.png</file>
+     <file>imgs/signals.100.png</file>
+     <file>imgs/lock-signals.0.png</file>
+     <file>imgs/lock-signals.25.png</file>
+     <file>imgs/lock-signals.50.png</file>
+     <file>imgs/lock-signals.75.png</file>
+     <file>imgs/lock-signals.100.png</file>
+     <file>imgs/lock-signals-unknown.0.png</file>
+     <file>imgs/lock-signals-unknown.25.png</file>
+     <file>imgs/lock-signals-unknown.50.png</file>
+     <file>imgs/lock-signals-unknown.75.png</file>
+     <file>imgs/lock-signals-unknown.100.png</file>
+     <file>imgs/wefree-192.0.png</file>
+     <file>imgs/wefree-192.25.png</file>
+     <file>imgs/wefree-192.50.png</file>
+     <file>imgs/wefree-192.75.png</file>
+     <file>imgs/wefree-192.100.png</file>
+  </qresource>
+</RCC>
