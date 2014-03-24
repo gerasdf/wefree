@@ -6,9 +6,9 @@ import os
 import logging
 from bisect import bisect
 
-from PyQt4 import QtCore, Qt, QtGui
+from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
-    QIcon, QMenu, QInputDialog, QPushButton, QLineEdit, QDialog)
+    QIcon, QMenu, QPushButton, QLineEdit, QDialog)
 
 from wefree.passwords_manager import PM,GEO
 from wefree.interfaces import WifiInterfaces
