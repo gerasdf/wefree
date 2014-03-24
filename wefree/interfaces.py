@@ -311,7 +311,7 @@ class WifiInterfacesNetworkManager(WifiInterfacesBase):
         for device in NetworkManager.NetworkManager.GetDevices():
             dev = device.SpecificDevice()
             if isinstance(dev, NetworkManager.Wireless):
-                dev.RequestScan({})
+                dev.RequestScan('')
 
 
 if USE_NETWORK_MANAGER:
