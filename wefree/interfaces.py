@@ -7,7 +7,7 @@ import uuid
 USE_NETWORK_MANAGER=True
 try:
     import NetworkManager
-except DBusException:
+except (DBusException, ImportError):
     USE_NETWORK_MANAGER=False
 
 
@@ -170,11 +170,11 @@ class WifiSignalWicd(WifiSignalBase):
         self.encrypted = self._getProperty('encryption')
         self.load_passwords()
 
-    def _getProperty(self, property):
-        return self.wireless.GetWirelessProperty(self.network_id, property)
+    def _getProperty(self, _property):
+        return self.wireless.GetWirelessProperty(self.network_id, _property)
 
-    def _setProperty(self, property, value):
-        return self.wireless.SetWirelessProperty(self.network_id, property, value)
+    def _setProperty(self, _property, value):
+        return self.wireless.SetWirelessProperty(self.network_id, _property, value)
 
     def _load_local_passwords(self):
         key = self._getProperty("key")
@@ -235,8 +235,13 @@ class WifiInterfacesWicd(WifiInterfacesBase):
         return signals
 
     def get_known_networks(self):
-        return [AP('BSSID', 'ESSID', 'password'), AP('BSSID2', 'ESSID2', 'password')]
-    
+        aps = []
+        for signal in self.get_signals():
+            key = signal._getProperty("key")
+            if key:
+                aps.append(AP(signal.bssid, signal.ssid, key))
+        return aps
+
     def connect_signals(self, refresh_menu_items, update_connected_state):
         self.update_connected_state = update_connected_state
         self.bus.add_signal_receiver(self.device_state_changed,
@@ -299,7 +304,7 @@ class WifiInterfacesNetworkManager(WifiInterfacesBase):
                 pass
 
         return answer
-    
+
     def connect_signals(self, refresh_menu_items, update_connected_state):
         self.update_connected_state = update_connected_state
         for device in NetworkManager.NetworkManager.GetDevices():

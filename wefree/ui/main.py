@@ -6,14 +6,14 @@ import os
 import logging
 from bisect import bisect
 
-from PyQt4 import QtCore, Qt, QtGui
+from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
-    QIcon, QMenu, QInputDialog, QPushButton, QLineEdit, QDialog)
+    QIcon, QMenu, QPushButton, QLineEdit, QDialog)
 
 from wefree.passwords_manager import PM,GEO
 from wefree.interfaces import WifiInterfaces
 
-#import NetworkManager
+import icons
 
 logger = logging.getLogger('wefree.main')
 
@@ -87,7 +87,11 @@ class MainUI(QMainWindow):
         self.load_icons()
         self.iconize()
         self.wifi.connect_signals(self.refresh_menu_items, self.update_connected_state)
-        
+        #QtCore.QTimer.singleShot(1500, self.timer)
+
+    #def timer(self):
+        #print("Hello madafaka")
+        #QtCore.QTimer.singleShot(1500, self.start)
 
     def open_about_dialog(self):
         """Show the about dialog."""
@@ -106,7 +110,7 @@ class MainUI(QMainWindow):
                 icons = self.icons[lock+'signals']
             else:
                 icons = self.icons['lock-signals-unknown']
-            
+
         return icons[SIGNALS_IMGS[level_index]]
 
     def build_menu(self, signals):
@@ -117,7 +121,7 @@ class MainUI(QMainWindow):
             if aText == bText: return 0
             if aText < bText: return -1
             return 1
-        
+
         menu = QMenu(self)
 
         connected = False
@@ -128,11 +132,11 @@ class MainUI(QMainWindow):
 
             if signal.is_connected():
                 connected = True
-            
+
             when_triggered = (lambda sign: lambda:self.please_connect(sign))(signal)
             action = QAction(icon, signal.ssid, self, triggered = when_triggered)
             signal_actions.append(action)
-            
+
         signal_actions.sort(cmp = action_cmp)
         menu.addActions(signal_actions)
 
@@ -166,17 +170,17 @@ class MainUI(QMainWindow):
         for ap in to_commit:
             PM.add_new_ap(ap)
             PM.report_success_ap(ap, auto_location = False)
-    
+
     def rescan_networks(self):
         self.wifi.force_rescan()
 
     def refresh_menu_items(self, *args):
         """Refresh."""
         signals = self.wifi.get_signals()
-        
+
         menu = self.build_menu(signals)
         self.sti.setContextMenu(menu)
-        
+
         bssids = [signal.bssid for signal in signals]
         GEO.refresh_seen_bssids(bssids)
 
@@ -203,17 +207,16 @@ class MainUI(QMainWindow):
         self.icons['signals'] = dict()
         self.icons['lock-signals'] = dict()
         self.icons['lock-signals-unknown'] = dict()
-        
+
         for strength in SIGNALS_IMGS:
-            self.icons['wefree'][strength]                 = QIcon(os.path.join(CURRENT_PATH, "imgs","wefree-192.%d.png" % strength))
-            self.icons['signals'][strength]                = QIcon(os.path.join(CURRENT_PATH, "imgs","signals.%d.png" % strength))
-            self.icons['lock-signals'][strength]           = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signals.%d.png" % strength))
-            self.icons['lock-signals-unknown'][strength]   = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signals-unknown.%d.png" % strength))
-        
+            self.icons['wefree'][strength]                 = QIcon(":/imgs/wefree-192.%d.png" % strength)
+            self.icons['signals'][strength]                = QIcon(":/imgs/signals.%d.png" % strength)
+            self.icons['lock-signals'][strength]           = QIcon(":/imgs/lock-signals.%d.png" % strength)
+            self.icons['lock-signals-unknown'][strength]   = QIcon(":/imgs/lock-signals-unknown.%d.png" % strength)
+
     def iconize(self):
         """Show a system tray icon with a small icon."""
 
-        self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
         self.sti = QSystemTrayIcon(self.icons['wefree'][0], self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
