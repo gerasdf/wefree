@@ -27,8 +27,8 @@ Let's free the WiFi.<br/>
 """
 
 # signals and levels to use them
-SIGNALS_IMGS = ['25', '50', '75', '100']
-SIGNAL_BREAKPOINTS = [.26, .51, .76]
+SIGNALS_IMGS = [0, 25, 50, 75, 100]
+SIGNAL_BREAKPOINTS = [.20, .45, .70, .90]
 
 def debug_trace():
     '''Set a tracepoint in the Python debugger that works with Qt'''
@@ -84,14 +84,14 @@ class MainUI(QMainWindow):
         self.wifi = WifiInterfaces()
         logger.debug("Main UI started ok")
         self.sti = None
+        self.load_icons()
         self.iconize()
         self.wifi.connect_signals(self.refresh_menu_items, self.update_connected_state)
+        
 
     def open_about_dialog(self):
         """Show the about dialog."""
-        self.sti.setIcon(self.icon2)
         QMessageBox.about(self, "WeFree", ABOUT_TEXT)
-        self.sti.setIcon(self.icon_main)
 
     def build_menu(self):
         """Build the menu."""
@@ -101,19 +101,22 @@ class MainUI(QMainWindow):
         # the signals
         for signal in self.wifi.get_signals():
             i = bisect(SIGNAL_BREAKPOINTS, signal.level)
-            if signal.encrypted:
-                lock = 'lock-'
+            if signal.has_db_passwords():
+                icon = self.icon_wefree[SIGNALS_IMGS[i]]
             else:
-                lock = ''
-            if not signal.encrypted or signal.has_password():
-                fname = lock+"signals-{}.png".format(SIGNALS_IMGS[i])
-            else:
-                fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
+                if signal.encrypted:
+                    lock = 'lock-'
+                else:
+                    lock = ''
+                if not signal.encrypted or signal.has_password():
+                    fname = lock+"signals-{}.png".format(SIGNALS_IMGS[i])
+                else:
+                    fname = "signals-unk-{}.png".format(SIGNALS_IMGS[i])
+                icon = QIcon(os.path.join(CURRENT_PATH, "imgs", fname))
 
             if signal.is_connected():
                 connected = True
             
-            icon = QIcon(os.path.join(CURRENT_PATH, "imgs", fname))
             when_triggered = (lambda sign: lambda:self.please_connect(sign))(signal)
             action = QAction(icon, signal.ssid, self, triggered = when_triggered)
             menu.addAction(action)
@@ -166,12 +169,16 @@ class MainUI(QMainWindow):
         self.refresh_menu_items()
         self.update_task = None
 
+    def load_icons(self):
+        self.icon_wefree = dict()
+        for strength in SIGNALS_IMGS:
+            self.icon_wefree[strength]   = QIcon(os.path.join(CURRENT_PATH, "imgs","wefree-192.%d.png" % strength))
+        
     def iconize(self):
         """Show a system tray icon with a small icon."""
-        self.icon_main = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.3.png"))
+
         self.icon2 = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.2.png"))
-        self.icon_green = QIcon(os.path.join(CURRENT_PATH, "imgs","icon-192.3.green.png"))
-        self.sti = QSystemTrayIcon(self.icon_main, self)
+        self.sti = QSystemTrayIcon(self.icon_wefree[0], self)
         if not self.sti.isSystemTrayAvailable():
             logger.warning("System tray not available.")
             return
@@ -182,6 +189,6 @@ class MainUI(QMainWindow):
 
     def update_connected_state(self, connected):
         if connected:
-            self.sti.setIcon(self.icon_green)
+            self.sti.setIcon(self.icon_wefree[100])
         else:
-            self.sti.setIcon(self.icon_main)
+            self.sti.setIcon(self.icon_wefree[0])

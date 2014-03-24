@@ -20,10 +20,13 @@ class WifiSignalBase(object):
     def is_connected(self):
         return self.connected
 
+    def add_db_password(self, password):
+        self.db_passwords.append(password)
+
     def add_password(self, password, report = False):
         self.report_to_db = report
         if report:
-            self.db_passwords.append(password)
+            self.add_db_password(password)
         else:
             self.local_passwords.append(password)
 
@@ -41,7 +44,7 @@ class WifiSignalBase(object):
 
     def _load_db_passwords(self):
         for password in PM.get_passwords_for_essid(self.ssid):
-            self.add_password(password)
+            self.add_db_password(password)
 
     def _add_local_password(self, password):
         print "Found password %s" % password
