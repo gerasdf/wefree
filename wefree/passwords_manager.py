@@ -167,6 +167,9 @@ class PasswordsManager(object):
         location = GEO.get_location()
         ap = AP(essid=essid, bssid=bssid, passwords=[password],
                 locations=[location], success=None)
+        self.add_new_ap(ap)
+        
+    def add_new_ap(self, ap):
         self.load_ap(ap)
         self.sync()
 

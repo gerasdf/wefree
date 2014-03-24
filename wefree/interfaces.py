@@ -1,7 +1,7 @@
 import dbus
 from dbus import DBusException
 
-from wefree.passwords_manager import PM
+from wefree.passwords_manager import PM, AP
 import uuid
 
 USE_NETWORK_MANAGER=True
@@ -234,6 +234,9 @@ class WifiInterfacesWicd(WifiInterfacesBase):
             signals.append(signal)
         return signals
 
+    def get_known_networks(self):
+        return [AP('BSSID', 'ESSID', 'password'), AP('BSSID2', 'ESSID2', 'password')]
+    
     def connect_signals(self, refresh_menu_items, update_connected_state):
         self.update_connected_state = update_connected_state
         self.bus.add_signal_receiver(self.device_state_changed,
@@ -279,6 +282,9 @@ class WifiInterfacesNetworkManager(WifiInterfacesBase):
                 signals.append(signal)
         return signals
 
+    def get_known_networks(self):
+        return [AP('BSSID', 'ESSID', 'password'), AP('BSSID2', 'ESSID2', 'password')]
+    
     def connect_signals(self, refresh_menu_items, update_connected_state):
         self.update_connected_state = update_connected_state
         for device in NetworkManager.NetworkManager.GetDevices():

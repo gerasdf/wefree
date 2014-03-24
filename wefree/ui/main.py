@@ -161,7 +161,11 @@ class MainUI(QMainWindow):
         d.show()
 
     def share_keys(self):
-        pass
+        to_commit = self.wifi.get_known_networks()
+        # to_commit = some_filter(to_commit)
+        for ap in to_commit:
+            PM.add_new_ap(ap)
+        PM.sync()
     
     def rescan_networks(self):
         self.wifi.force_rescan()
