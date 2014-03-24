@@ -62,6 +62,30 @@
         lon = $("#id_long").val();
         get_nearby(lat, lon);
     });
+    $("#id_auto_crawl_button").click(function (asd) {
+		radius_max = 1;
+        lat = $("#id_lat").val();
+        lon = $("#id_long").val();
+        meters = 100.0;
+        radius = 0.1;
+        degree = 0.0;
+        radius_inc = 10.0 / 360.0;
+        while (radius < radius_max) {
+			window.setTimeout(function(){},1000);
+			console.log(lat+Math.sin(degree)*radius + " " + lon+Math.cos(degree)*radius);
+			/*get_nearby(lat+Math.sin(degree)*radius, lon+Math.cos(degree)*radius);*/
+            degree_inc = 360.0 * radius_inc/radius;
+            radius += radius_inc;
+            degree += degree_inc;
+            degree %= 360.0;
+            if (degree < 0.01) {
+                radius = 0.1;
+                lon = Math.random(-180.0,180.0);
+                lat = Math.floor(-90.0,90.0);
+			}
+		}
+    });
+	
     lat = 0;
     lon = 0;
     // create a map in the "map" div, set the view to a given place and zoom
@@ -88,7 +112,7 @@
 
     <li><label for="id_lat">Lat:</label> <input id="id_lat" name="lat" type="text" /></li>
     <li><label for="id_long">Long:</label> <input id="id_long" name="long" type="text" /></li>
-    <li><label for="id_crawl_button">Crawl:</label> <input id="id_crawl_button" type="button" value="crawl!"/></li>
+    <li><label for="id_crawl_button">Crawl:</label><input id="id_crawl_button" type="button" value="crawl!"/><input id="id_auto_crawl_button" type="button" value="auto crawl!"/></li>
 
     <div id="map"></div>
 </body>
