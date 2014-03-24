@@ -3,3 +3,4 @@ syntax: glob
 venv/
 flask-docs
 *.sqlite3
+web/static

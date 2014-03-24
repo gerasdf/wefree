@@ -226,7 +226,7 @@ class WifiInterfacesWicd(WifiInterfacesBase):
         signals = []
         for network_id in range(0, self.wireless.GetNumberOfNetworks()):
             signal = WifiSignalWicd(self.wireless, network_id)
-            self.signals.append(signal)
+            signals.append(signal)
         return signals
 
     def connect_signals(self, refresh_menu_items, wifi_state_changed):

@@ -24,8 +24,15 @@ def index(request):
 def get(request):
     ret_data = ""
     aps = AP.objects.all().select_related()
-    for ap in aps:
-        ret_data += ap.to_json() + "\n"
+    separator = "\n"
+
+    if request.GET.get("nonchunked"):
+        ret_data += "["
+        separator = ","
+    ret_data += separator.join([ap.to_json() for ap in aps])
+    if request.GET.get("nonchunked"):
+        ret_data += "]"
+
     return HttpResponse(ret_data, mimetype="application/json")
 
 def report(request):
