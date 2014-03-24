@@ -13,7 +13,7 @@ from PyQt4.QtGui import (QAction, QMainWindow, QMessageBox, QSystemTrayIcon,
 from wefree.passwords_manager import PM,GEO
 from wefree.interfaces import WifiInterfaces
 
-#import NetworkManager
+import icons
 
 logger = logging.getLogger('wefree.main')
 
@@ -206,7 +206,7 @@ class MainUI(QMainWindow):
         
         for strength in SIGNALS_IMGS:
             self.icons['wefree'][strength]                 = QIcon(os.path.join(CURRENT_PATH, "imgs","wefree-192.%d.png" % strength))
-            self.icons['signals'][strength]                = QIcon(os.path.join(CURRENT_PATH, "imgs","signals.%d.png" % strength))
+            self.icons['signals'][strength]                = QIcon(":/imgs/signals.%d.png" % strength)
             self.icons['lock-signals'][strength]           = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signals.%d.png" % strength))
             self.icons['lock-signals-unknown'][strength]   = QIcon(os.path.join(CURRENT_PATH, "imgs","lock-signals-unknown.%d.png" % strength))
         

@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="/">
+     <file>imgs/WeFree-3.svg</file>
+     <file>imgs/signals.0.png</file>
+     <file>imgs/signals.25.png</file>
+     <file>imgs/signals.50.png</file>
+     <file>imgs/signals.75.png</file>
+     <file>imgs/signals.100.png</file>
+  </qresource>
+</RCC>
