@@ -45,14 +45,13 @@
                     }), dataType: "json",
                         contentType: "application/json",
                     });
-					hash = hotspot["lat"].toString() + hotspot["lon"].toString() + 							hotspot["ssid"].toString() + hotspot["password"].toString()
-					if (!markers[hash]) {
-                    	markers[hash] = L.marker([hotspot["lat"], hotspot["lon"]],{icon: icon})
-							.addTo(map)
-							.bindPopup(hotspot["ssid"] + "<br/>" + password);
-					} else {
-						console.log(hash + " exits!")
-					}
+                    hash = hotspot["lat"].toString() + hotspot["lon"].toString() + hotspot["ssid"].toString() + hotspot["password"].toString()
+                    if (!markers[hash]) {
+                        markers[hash] = L.marker([hotspot["lat"], hotspot["lon"]],{icon: icon})
+                            .addTo(map).bindPopup(hotspot["ssid"] + "<br/>" + password);
+                    } else {
+                        console.log(hash + " exits!")
+                    }
                 }
             }
         });
@@ -63,11 +62,11 @@
         lon = $("#id_long").val();
         get_nearby(lat, lon);
     });
-    lat = -31.0505399;
-    lon = -64.5019851;
+    lat = 0;
+    lon = 0;
     // create a map in the "map" div, set the view to a given place and zoom
 	icon = L.divIcon({className: 'wifree', iconSize: [25, 16] });
-    map = L.map('map').setView([lat, lon], 14);
+    map = L.map('map').setView([lat, lon], 3);
 
     // add an OpenStreetMap tile layer
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -91,7 +90,6 @@
     <li><label for="id_long">Long:</label> <input id="id_long" name="long" type="text" /></li>
     <li><label for="id_crawl_button">Crawl:</label> <input id="id_crawl_button" type="button" value="crawl!"/></li>
 
-    <div id="map">
-    </div>
+    <div id="map"></div>
 </body>
 </html>
