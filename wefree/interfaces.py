@@ -21,9 +21,11 @@ class WifiSignalBase(object):
         return self.connected
 
     def add_password(self, password, report = False):
-        self.db_passwords.append(password)
+        self.report_to_db = report
         if report:
-            self.report_to_db = True
+            self.db_passwords.append(password)
+        else:
+            self.local_passwords.append(password)
 
     def has_local_passwords(self):
         return 0 != len(self.local_passwords)

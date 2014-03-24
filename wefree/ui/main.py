@@ -115,8 +115,7 @@ class MainUI(QMainWindow):
             
             icon = QIcon(os.path.join(CURRENT_PATH, "imgs", fname))
             when_triggered = (lambda sign: lambda:self.please_connect(sign))(signal)
-            action = QAction(
-               icon, signal.ssid, self, triggered = when_triggered)
+            action = QAction(icon, signal.ssid, self, triggered = when_triggered)
             menu.addAction(action)
 
         self.update_connected_state(connected)
