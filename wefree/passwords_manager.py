@@ -173,6 +173,9 @@ class PasswordsManager(object):
         self.load_ap(ap)
         self.sync()
 
+    def report_success_ap(self):
+        self.report_success(ap.essid, ap.bssid, ap.password[0], True)
+        
     def report_success(self, essid=None, bssid=None, password=None, success=None):
         if success is None:
             return
