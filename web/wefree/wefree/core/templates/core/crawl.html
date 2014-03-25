@@ -38,10 +38,10 @@
                     });
                     hash = hotspot["lat"].toString() + hotspot["lon"].toString() + hotspot["ssid"].toString() + hotspot["password"].toString()
                     if (!markers[hash]) {
-                        markers[hash] = L.marker([hotspot["lat"], hotspot["lon"]],{icon: icon})
-							.bindPopup("<div class='wifree-ssid'>" + hotspot["ssid"] + "</div><div class='wifree-passwd'>" + password + "</div>")
+                        markers[hash] = L.marker([hotspot["lat"], hotspot["lon"]],{icon: icon}).
+							addTo(map).bindPopup("<div class='wifree-ssid'>" + hotspot["ssid"] + "</div><div class='wifree-passwd'>" + password + "</div>");
                     } else {
-                        console.log(hash + " exists!")
+                        console.log(hash + " exists!");
                     }
                 }
             }
