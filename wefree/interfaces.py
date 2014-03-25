@@ -74,8 +74,7 @@ class WifiSignalNetworkManager(WifiSignalBase):
         self.encrypted = (ap.WpaFlags != 0) or (ap.RsnFlags != 0)
         try:
             self.connected = device.SpecificDevice().ActiveAccessPoint.HwAddress == self.bssid
-            { 1: 3213}[3]
-        except (DBusException, KeyError):
+        except (DBusException, KeyError, AttributeError):
             self.connected = False
         self.load_passwords()
 
