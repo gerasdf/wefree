@@ -21,7 +21,7 @@ $(function(){
                     if(lat != null && lon !=null) {
                         markers.addLayer(
                             L.marker([lat, lon], {icon: icon})
-                                .bindPopup(ap.essid + "\n" + ap.passwords)
+							.bindPopup("<div class='wifree-ssid'>" + ap.essid + "</div><div class='wifree-passwd'>" + ap.passwords + "</div>")
                         );
                     }
                 }

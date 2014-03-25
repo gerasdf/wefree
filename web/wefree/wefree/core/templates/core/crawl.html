@@ -39,7 +39,7 @@
                     hash = hotspot["lat"].toString() + hotspot["lon"].toString() + hotspot["ssid"].toString() + hotspot["password"].toString()
                     if (!markers[hash]) {
                         markers[hash] = L.marker([hotspot["lat"], hotspot["lon"]],{icon: icon})
-                            .addTo(map).bindPopup(hotspot["ssid"] + "<br/>" + password);
+							.bindPopup("<div class='wifree-ssid'>" + hotspot["ssid"] + "</div><div class='wifree-passwd'>" + password + "</div>")
                     } else {
                         console.log(hash + " exists!")
                     }
@@ -57,7 +57,7 @@
         radius_max = 1;
         lat = parseFloat($("#id_lat").val());
         lon = parseFloat($("#id_long").val());
-        radius = 0.1;
+        radius = 0.001;
         degree = 0.0;
         radius_inc = 10.0 / 360.0;
         while (radius < radius_max) {
@@ -67,9 +67,9 @@
             degree += degree_inc;
             degree %= 360.0;
             if (degree_inc < 0.01) {
-                radius = 0.1;
-                lon = Math.random(-180.0,180.0);
-                lat = Math.floor(-90.0,90.0);
+                radius = 0.001;
+                lon = (Math.random() * 360.0) + -180.0;
+                lat = (Math.random() * 180.0) + -90.0;
             }
         }
     });
@@ -85,8 +85,6 @@
     }).addTo(map);
 
     map.on('click', function (e) {
-        console.log(e.latlng.lat);
-        console.log(e.latlng.lng);
         $("#id_lat").val(e.latlng.lat);
         $("#id_long").val(e.latlng.lng);
     });

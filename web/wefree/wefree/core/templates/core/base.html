@@ -12,9 +12,17 @@
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >
 <script src="{% static 'leaflet.markercluster.min.js' %}"></script>
 <style>
-    #map {height: 480px;}
-    .wifree {background-image: url('/static/WeFree3.svg'); eight: 16px; width: 25px;}
+    #map {height: 480px; border-radius: 15px;}
+    .wifree {background-image: url('/static/WeFree3.svg'); height: 16px; width: 25px;}
+	.wifree-ssid {background: url('/static/ssid.png') no-repeat 0px 0px; padding-left: 27px;}
+	.wifree-passwd {background: url('/static/passwd.png') no-repeat 6px 0px; padding-left: 27px;}
+	.navbar-brand {padding: .5em;}
 </style>
+<script>
+	$(function(){
+		$(".nav li a[href='"+window.location.pathname+"']").parent().addClass('active');
+	});
+</script>
 {% block extrahead %}
 {% endblock %}
 </head>
@@ -32,7 +40,7 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="/">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="/crawl/">Crawl</a></li>
             <li><a href="https://github.com/gerasdf/wefree">Download</a></li>
           </ul>
