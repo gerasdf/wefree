@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5053"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
+            <connections>
+                <outlet property="delegate" destination="Voe-Tx-rLC" id="GzC-gU-4Uq"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <menu id="0FK-DD-SzX">
+            <items>
+                <menuItem title="Share..." id="pC9-j1-GeY">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="doSomething:" target="Voe-Tx-rLC" id="B2m-dC-hIz"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Update database" id="nPV-r9-tzZ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Rescan" id="j1b-zZ-Foa">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Quit" id="Taw-wD-ABk">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="terminate:" target="-1" id="Cjh-Nr-XBn"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="WTF?" id="l2w-wG-hGJ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="wtf:" target="Voe-Tx-rLC" id="9qm-Ax-9wT"/>
+                    </connections>
+                </menuItem>
+            </items>
+        </menu>
+        <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
+            <connections>
+                <outlet property="statusMenu" destination="0FK-DD-SzX" id="q9L-j3-uvg"/>
+            </connections>
+        </customObject>
+        <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
+    </objects>
+</document>
