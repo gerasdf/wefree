@@ -59,7 +59,7 @@
         lon = parseFloat($("#id_long").val());
         radius = 0.001;
         degree = 0.0;
-        radius_inc = 10.0 / 360.0;
+        radius_inc = 4.0 / 360.0;
         while (radius < radius_max) {
             get_nearby( lat+(Math.sin(degree)*radius), lon+(Math.cos(degree)*radius) );
             degree_inc = radius_inc/radius;
