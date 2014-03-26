@@ -63,12 +63,12 @@ class GeoLocation(object):
                     avg_long += location.long
                 seen_and_known += 1
         if seen_and_known == 0:
-            return None, None
+            return Location(None, None)
 
         avg_lat /= seen_and_known
         avg_long /= seen_and_known
 
-        return (avg_lat, avg_long)
+        return Location(avg_lat, avg_long)
 
 class Database(object):
     def __init__(self):
