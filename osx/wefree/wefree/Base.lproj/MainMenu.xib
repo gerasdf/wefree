@@ -13,18 +13,26 @@
         <customObject id="-3" userLabel="Application"/>
         <menu id="0FK-DD-SzX">
             <items>
+                <menuItem isSeparatorItem="YES" id="pFS-ey-YPr"/>
                 <menuItem title="Share..." id="pC9-j1-GeY">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="doSomething:" target="Voe-Tx-rLC" id="B2m-dC-hIz"/>
+                        <action selector="share:" target="Voe-Tx-rLC" id="aTV-xR-jPE"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Update database" id="nPV-r9-tzZ">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="updateDatabase:" target="Voe-Tx-rLC" id="yTn-oW-Udb"/>
+                    </connections>
                 </menuItem>
                 <menuItem title="Rescan" id="j1b-zZ-Foa">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="rescan:" target="Voe-Tx-rLC" id="2C4-V6-c86"/>
+                    </connections>
                 </menuItem>
+                <menuItem isSeparatorItem="YES" id="38q-4X-bLL"/>
                 <menuItem title="Quit" id="Taw-wD-ABk">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>

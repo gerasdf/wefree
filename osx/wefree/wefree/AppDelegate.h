@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <CoreWLAN/CoreWLAN.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
     NSImage *logo;
@@ -14,6 +15,7 @@
     NSStatusItem *statusItem;
     NSImage *statusImage;
     NSImage *statusHighlightImage;
+    NSMutableDictionary *networks;
 }
 
 //optional
@@ -22,6 +24,7 @@
 - (IBAction) updateDatabase: (id)sender;
 - (IBAction) rescan: (id)sender;
 - (IBAction) wtf: (id)sender;
+- (IBAction) connectTo: (id)sender;
 
 @property (assign) IBOutlet NSWindow *window;
 
