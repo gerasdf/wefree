@@ -57,6 +57,7 @@
         radius_max = 1;
         lat = parseFloat($("#id_lat").val());
         lon = parseFloat($("#id_long").val());
+		map.setView([lat, lon], 7);
         radius = 0.001;
         degree = 0.0;
         radius_inc = 4.0 / 360.0;
@@ -73,6 +74,16 @@
             }
         }
     });
+	$("#id_crawl_my_position_button").click(function (asd) {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(updatePositionAndCrawl);
+		}
+		function updatePositionAndCrawl(position) {
+			$("#id_lat").val(position.coords.latitude);
+			$("#id_long").val(position.coords.longitude);
+			$("#id_auto_crawl_button").click();
+		}
+	});
     lat = 0;
     lon = 0;
     // create a map in the "map" div, set the view to a given place and zoom
@@ -99,7 +110,7 @@
         <div class="form-group">
         <label for="id_lat" class="control-label">Latitude</label> <input class="form-control" id="id_lat" name="lat" type="text" />
         <label for="id_long" class="control-label" >Longitude</label> <input class="form-control" id="id_long" name="long" type="text" />
-        <input id="id_crawl_button" type="button" value="crawl!" class="btn btn-default"/><input class="btn btn" id="id_auto_crawl_button" type="button" value="auto crawl!"/></li>
+        <input id="id_crawl_button" type="button" value="crawl!" class="btn btn-default"/><input class="btn btn" id="id_auto_crawl_button" type="button" value="auto crawl!"/><input class="btn btn" id="id_crawl_my_position_button" type="button" value="crawl my location!"/></li>
         </div>
         </form>
     </div>
