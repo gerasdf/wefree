@@ -46,15 +46,13 @@
         networks = [NSMutableDictionary dictionary];
         for (CWNetwork *net in nets) {
             [networks setObject: net forKey: [net ssid]];
-            NSMenuItem *item = [[NSMenuItem alloc] initWithTitle: [net ssid] action:@selector(connectTo:) keyEquivalent:@""];
-            [statusMenu insertItem: item atIndex: 0];
         }
-        /*NSArray *sorted = [nets sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-        NSLog(@"It should rescan");
-        for (CWNetwork *net in sorted) {
-            NSMenuItem *item = [[NSMenuItem alloc] initWithTitle: [net ssid] action:@selector(connectTo:) keyEquivalent:@""];
-            [statusMenu insertItem: item atIndex: 0];
-        }*/
+        NSArray *sortedArray = [[networks allKeys] sortedArrayUsingSelector: @selector(localizedCaseInsensitiveCompare:)];
+        for (NSString *ssid in sortedArray) {
+            NSMenuItem *item = [[NSMenuItem alloc] initWithTitle: ssid action:@selector(connectTo:) keyEquivalent:@""];
+            NSInteger position = [[statusMenu itemArray] count] - 7;
+            [statusMenu insertItem: item atIndex: position];
+        }
     }
 }
 
