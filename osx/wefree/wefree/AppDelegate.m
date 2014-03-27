@@ -23,6 +23,7 @@
     [statusItem setAlternateImage: statusHighlightImage];
     [statusItem setMenu: statusMenu];
     [statusItem setHighlightMode: YES];
+    [[NSRunLoop currentRunLoop] performSelector:@selector(updateNetworks) target:self argument:statusMenu order:0 modes:[NSArray arrayWithObject:NSEventTrackingRunLoopMode]];
 }
 
 - (IBAction) share: (id)sender {
@@ -33,8 +34,7 @@
     NSLog(@"It should update the database");
 }
 
-- (IBAction) rescan: (id)sender {
-    NSLog(@"It should rescan");
+- (void)updateNetworks {
     @autoreleasepool {
         CWInterface *currentInterface = [CWInterface interface];
         NSArray *nets = [[currentInterface scanForNetworksWithName:nil error:nil] allObjects];
@@ -54,6 +54,11 @@
             [statusMenu insertItem: item atIndex: position];
         }
     }
+}
+
+- (IBAction) rescan: (id)sender {
+    NSLog(@"It should rescan");
+    [self updateNetworks];
 }
 
 - (IBAction) wtf: (id)sender {
