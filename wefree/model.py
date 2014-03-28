@@ -14,6 +14,12 @@ class AP(object):
     def __eq__(self, ap2):
         return self.bssid == ap2.bssid and self.ssid == ap2.ssid
 
+    def __str__(self):
+        return "AP: %s/%s" % (self.ssid, self.bssid)
+    
+    def __repr__(self):
+        return str(self)
+    
 class VisibleSignal(object):
     " There's an os specific abstraction for each Networking implementation "
     def __init__(self, ap, strength = None):
@@ -31,7 +37,7 @@ class VisibleSignal(object):
         raise Exception, "Subclass responsibility"
     
 class Configuration(object):
-    def __init__(self, ap, passwords):
+    def __init__(self, ap, passwords = None):
         self.ap = ap
         self.passwords = passwords
     
