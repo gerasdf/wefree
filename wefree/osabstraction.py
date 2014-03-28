@@ -34,10 +34,14 @@ class NetworkingBackend(object):
         signal.connect()
 
     def is_connected(self, ap):
-        return ap in self.currently_connected_configurations()
+        return ap in self.currently_connected_aps()
     
-    def currently_connected_configurations(self):
+    def currently_connected_aps(self):
         " Answers a list of the configurations that're currently active and connected "
+        raise Exception, "Subclass responsibility"
+
+    def existing_configurations(self):
+        " Answers a list of all connections' configurations saved in the computer "
         raise Exception, "Subclass responsibility"
 
 # NetworkManager implementation
@@ -75,7 +79,7 @@ class NetworkManagerBackend(NetworkingBackend):
         all_devices = NetworkManager.NetworkManager.GetDevices()
         return [device for device in all_devices if device.DeviceType == NetworkManager.NM_DEVICE_TYPE_WIFI]
 
-    def AP(self, network_manager_AP):
+    def AP_from_native(self, network_manager_AP):
         if (network_manager_AP.WpaFlags | network_manager_AP.RsnFlags):
             # ToDo: use constants like NM_802_11_AP_SEC_KEY_MGMT_PSK:
             crypto = model.AP.CRYPTO_WPA2
@@ -85,27 +89,36 @@ class NetworkManagerBackend(NetworkingBackend):
         ap = model.AP(network_manager_AP.Ssid, network_manager_AP.HwAddress, crypto)
         return ap
 
-    def list_visible_signals(self):
+    def visible_signals(self):
         """Get the wifi currently visible signals."""
         answer = []
         for device in self.wifi_devices():
             nm_aps = device.SpecificDevice().GetAccessPoints()
             for nm_ap in nm_aps:
-                ap = self.AP(nm_ap)
+                ap = self.AP_from_native(nm_ap)
                 strength = ord(nm_ap.Strength) / 100.0
                 signal = NetworkManagerVisibleSignal(ap, strength, device)
                 answer.append(signal)
         return answer
 
-
-# Wicd implementation
-
-    def currently_connected_configurations(self):
+    def currently_connected_aps(self):
         answer = []
         for device in self.wifi_devices():
             nm_ap = device.SpecificDevice().ActiveAccessPoint
-            answer.append(self.AP(nm_ap))
+            answer.append(self.AP_from_native(nm_ap))
         return answer
+
+    def existing_configurations(self):
+        answer = []
+        for connection in NetworkManager.Settings.ListConnections():
+            settings = connection.GetSettings()
+            try:
+                if settings['802-11-wireless']['ssid'] == self.ssid:
+                    answer.append(connection)
+            except KeyError:
+                pass
+    
+# Wicd implementation
 
 class WicdVisibleSignal(model.VisibleSignal):
     def connect(self, using_password=None):
