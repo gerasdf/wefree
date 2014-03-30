@@ -7,21 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		516C202118E7C89500D8C7E2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 516C200418E7C89500D8C7E2 /* AppDelegate.m */; };
+		516C202218E7C89500D8C7E2 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 516C200518E7C89500D8C7E2 /* MainMenu.xib */; };
+		516C202318E7C89500D8C7E2 /* Database.m in Sources */ = {isa = PBXBuildFile; fileRef = 516C200818E7C89500D8C7E2 /* Database.m */; };
+		516C202418E7C89500D8C7E2 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 516C200918E7C89500D8C7E2 /* Credits.rtf */; };
+		516C202518E7C89500D8C7E2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 516C200B18E7C89500D8C7E2 /* InfoPlist.strings */; };
+		516C202618E7C89500D8C7E2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 516C200D18E7C89500D8C7E2 /* Images.xcassets */; };
+		516C202718E7C89500D8C7E2 /* lock-signals-unknown.0.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C200E18E7C89500D8C7E2 /* lock-signals-unknown.0.png */; };
+		516C202818E7C89500D8C7E2 /* lock-signals-unknown.100.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C200F18E7C89500D8C7E2 /* lock-signals-unknown.100.png */; };
+		516C202918E7C89500D8C7E2 /* lock-signals-unknown.25.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201018E7C89500D8C7E2 /* lock-signals-unknown.25.png */; };
+		516C202A18E7C89500D8C7E2 /* lock-signals-unknown.50.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201118E7C89500D8C7E2 /* lock-signals-unknown.50.png */; };
+		516C202B18E7C89500D8C7E2 /* lock-signals-unknown.75.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201218E7C89500D8C7E2 /* lock-signals-unknown.75.png */; };
+		516C202C18E7C89500D8C7E2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 516C201318E7C89500D8C7E2 /* main.m */; };
+		516C202D18E7C89500D8C7E2 /* connected.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201418E7C89500D8C7E2 /* connected.png */; };
+		516C202E18E7C89500D8C7E2 /* signals.0.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201518E7C89500D8C7E2 /* signals.0.png */; };
+		516C202F18E7C89500D8C7E2 /* signals.100.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201618E7C89500D8C7E2 /* signals.100.png */; };
+		516C203018E7C89500D8C7E2 /* signals.25.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201718E7C89500D8C7E2 /* signals.25.png */; };
+		516C203118E7C89500D8C7E2 /* signals.50.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201818E7C89500D8C7E2 /* signals.50.png */; };
+		516C203218E7C89500D8C7E2 /* signals.75.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201918E7C89500D8C7E2 /* signals.75.png */; };
+		516C203318E7C89500D8C7E2 /* wefree-192.0.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201A18E7C89500D8C7E2 /* wefree-192.0.png */; };
+		516C203418E7C89500D8C7E2 /* wefree-192.100.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201B18E7C89500D8C7E2 /* wefree-192.100.png */; };
+		516C203518E7C89500D8C7E2 /* wefree-192.25.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201C18E7C89500D8C7E2 /* wefree-192.25.png */; };
+		516C203618E7C89500D8C7E2 /* wefree-192.50.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201D18E7C89500D8C7E2 /* wefree-192.50.png */; };
+		516C203718E7C89500D8C7E2 /* wefree-192.75.png in Resources */ = {isa = PBXBuildFile; fileRef = 516C201E18E7C89500D8C7E2 /* wefree-192.75.png */; };
+		516C203818E7C89500D8C7E2 /* wefree-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 516C201F18E7C89500D8C7E2 /* wefree-Info.plist */; };
 		516CD60D18E2855C007FDC19 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 516CD60C18E2855C007FDC19 /* Cocoa.framework */; };
-		516CD61718E2855C007FDC19 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 516CD61518E2855C007FDC19 /* InfoPlist.strings */; };
-		516CD61918E2855C007FDC19 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 516CD61818E2855C007FDC19 /* main.m */; };
-		516CD61D18E2855C007FDC19 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 516CD61B18E2855C007FDC19 /* Credits.rtf */; };
-		516CD62018E2855C007FDC19 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 516CD61F18E2855C007FDC19 /* AppDelegate.m */; };
-		516CD62318E2855C007FDC19 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 516CD62118E2855C007FDC19 /* MainMenu.xib */; };
 		516CD62C18E2855C007FDC19 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 516CD62B18E2855C007FDC19 /* XCTest.framework */; };
 		516CD62D18E2855C007FDC19 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 516CD60C18E2855C007FDC19 /* Cocoa.framework */; };
 		516CD63518E2855C007FDC19 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 516CD63318E2855C007FDC19 /* InfoPlist.strings */; };
 		516CD63718E2855C007FDC19 /* wefreeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 516CD63618E2855C007FDC19 /* wefreeTests.m */; };
-		516CD64518E288B2007FDC19 /* wefree-192.0.png in Resources */ = {isa = PBXBuildFile; fileRef = 516CD64018E288B2007FDC19 /* wefree-192.0.png */; };
-		516CD64618E288B2007FDC19 /* wefree-192.25.png in Resources */ = {isa = PBXBuildFile; fileRef = 516CD64118E288B2007FDC19 /* wefree-192.25.png */; };
-		516CD64718E288B2007FDC19 /* wefree-192.50.png in Resources */ = {isa = PBXBuildFile; fileRef = 516CD64218E288B2007FDC19 /* wefree-192.50.png */; };
-		516CD64818E288B2007FDC19 /* wefree-192.75.png in Resources */ = {isa = PBXBuildFile; fileRef = 516CD64318E288B2007FDC19 /* wefree-192.75.png */; };
-		516CD64918E288B2007FDC19 /* wefree-192.100.png in Resources */ = {isa = PBXBuildFile; fileRef = 516CD64418E288B2007FDC19 /* wefree-192.100.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,29 +49,43 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		516C200318E7C89500D8C7E2 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		516C200418E7C89500D8C7E2 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		516C200618E7C89500D8C7E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		516C200718E7C89500D8C7E2 /* Database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Database.h; sourceTree = "<group>"; };
+		516C200818E7C89500D8C7E2 /* Database.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Database.m; sourceTree = "<group>"; };
+		516C200A18E7C89500D8C7E2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		516C200C18E7C89500D8C7E2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		516C200D18E7C89500D8C7E2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		516C200E18E7C89500D8C7E2 /* lock-signals-unknown.0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock-signals-unknown.0.png"; sourceTree = "<group>"; };
+		516C200F18E7C89500D8C7E2 /* lock-signals-unknown.100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock-signals-unknown.100.png"; sourceTree = "<group>"; };
+		516C201018E7C89500D8C7E2 /* lock-signals-unknown.25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock-signals-unknown.25.png"; sourceTree = "<group>"; };
+		516C201118E7C89500D8C7E2 /* lock-signals-unknown.50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock-signals-unknown.50.png"; sourceTree = "<group>"; };
+		516C201218E7C89500D8C7E2 /* lock-signals-unknown.75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lock-signals-unknown.75.png"; sourceTree = "<group>"; };
+		516C201318E7C89500D8C7E2 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		516C201418E7C89500D8C7E2 /* connected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = connected.png; sourceTree = "<group>"; };
+		516C201518E7C89500D8C7E2 /* signals.0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = signals.0.png; sourceTree = "<group>"; };
+		516C201618E7C89500D8C7E2 /* signals.100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = signals.100.png; sourceTree = "<group>"; };
+		516C201718E7C89500D8C7E2 /* signals.25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = signals.25.png; sourceTree = "<group>"; };
+		516C201818E7C89500D8C7E2 /* signals.50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = signals.50.png; sourceTree = "<group>"; };
+		516C201918E7C89500D8C7E2 /* signals.75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = signals.75.png; sourceTree = "<group>"; };
+		516C201A18E7C89500D8C7E2 /* wefree-192.0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.0.png"; sourceTree = "<group>"; };
+		516C201B18E7C89500D8C7E2 /* wefree-192.100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.100.png"; sourceTree = "<group>"; };
+		516C201C18E7C89500D8C7E2 /* wefree-192.25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.25.png"; sourceTree = "<group>"; };
+		516C201D18E7C89500D8C7E2 /* wefree-192.50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.50.png"; sourceTree = "<group>"; };
+		516C201E18E7C89500D8C7E2 /* wefree-192.75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.75.png"; sourceTree = "<group>"; };
+		516C201F18E7C89500D8C7E2 /* wefree-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "wefree-Info.plist"; sourceTree = "<group>"; };
+		516C202018E7C89500D8C7E2 /* wefree-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "wefree-Prefix.pch"; sourceTree = "<group>"; };
 		516CD60918E2855C007FDC19 /* wefree.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wefree.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		516CD60C18E2855C007FDC19 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		516CD60F18E2855C007FDC19 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		516CD61018E2855C007FDC19 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		516CD61118E2855C007FDC19 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		516CD61418E2855C007FDC19 /* wefree-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "wefree-Info.plist"; sourceTree = "<group>"; };
-		516CD61618E2855C007FDC19 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		516CD61818E2855C007FDC19 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		516CD61A18E2855C007FDC19 /* wefree-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "wefree-Prefix.pch"; sourceTree = "<group>"; };
-		516CD61C18E2855C007FDC19 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		516CD61E18E2855C007FDC19 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		516CD61F18E2855C007FDC19 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		516CD62218E2855C007FDC19 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		516CD62A18E2855C007FDC19 /* wefreeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = wefreeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		516CD62B18E2855C007FDC19 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		516CD63218E2855C007FDC19 /* wefreeTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "wefreeTests-Info.plist"; sourceTree = "<group>"; };
 		516CD63418E2855C007FDC19 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		516CD63618E2855C007FDC19 /* wefreeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = wefreeTests.m; sourceTree = "<group>"; };
-		516CD64018E288B2007FDC19 /* wefree-192.0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.0.png"; sourceTree = "<group>"; };
-		516CD64118E288B2007FDC19 /* wefree-192.25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.25.png"; sourceTree = "<group>"; };
-		516CD64218E288B2007FDC19 /* wefree-192.50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.50.png"; sourceTree = "<group>"; };
-		516CD64318E288B2007FDC19 /* wefree-192.75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.75.png"; sourceTree = "<group>"; };
-		516CD64418E288B2007FDC19 /* wefree-192.100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wefree-192.100.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,10 +109,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		516C200218E7C89500D8C7E2 /* wefree */ = {
+			isa = PBXGroup;
+			children = (
+				516C200318E7C89500D8C7E2 /* AppDelegate.h */,
+				516C200418E7C89500D8C7E2 /* AppDelegate.m */,
+				516C200518E7C89500D8C7E2 /* MainMenu.xib */,
+				516C200718E7C89500D8C7E2 /* Database.h */,
+				516C200818E7C89500D8C7E2 /* Database.m */,
+				516C200918E7C89500D8C7E2 /* Credits.rtf */,
+				516C200B18E7C89500D8C7E2 /* InfoPlist.strings */,
+				516C200D18E7C89500D8C7E2 /* Images.xcassets */,
+				516C200E18E7C89500D8C7E2 /* lock-signals-unknown.0.png */,
+				516C200F18E7C89500D8C7E2 /* lock-signals-unknown.100.png */,
+				516C201018E7C89500D8C7E2 /* lock-signals-unknown.25.png */,
+				516C201118E7C89500D8C7E2 /* lock-signals-unknown.50.png */,
+				516C201218E7C89500D8C7E2 /* lock-signals-unknown.75.png */,
+				516C201318E7C89500D8C7E2 /* main.m */,
+				516C201418E7C89500D8C7E2 /* connected.png */,
+				516C201518E7C89500D8C7E2 /* signals.0.png */,
+				516C201618E7C89500D8C7E2 /* signals.100.png */,
+				516C201718E7C89500D8C7E2 /* signals.25.png */,
+				516C201818E7C89500D8C7E2 /* signals.50.png */,
+				516C201918E7C89500D8C7E2 /* signals.75.png */,
+				516C201A18E7C89500D8C7E2 /* wefree-192.0.png */,
+				516C201B18E7C89500D8C7E2 /* wefree-192.100.png */,
+				516C201C18E7C89500D8C7E2 /* wefree-192.25.png */,
+				516C201D18E7C89500D8C7E2 /* wefree-192.50.png */,
+				516C201E18E7C89500D8C7E2 /* wefree-192.75.png */,
+				516C201F18E7C89500D8C7E2 /* wefree-Info.plist */,
+				516C202018E7C89500D8C7E2 /* wefree-Prefix.pch */,
+			);
+			path = wefree;
+			sourceTree = "<group>";
+		};
 		516CD60018E2855C007FDC19 = {
 			isa = PBXGroup;
 			children = (
-				516CD61218E2855C007FDC19 /* wefree */,
+				516C200218E7C89500D8C7E2 /* wefree */,
 				516CD63018E2855C007FDC19 /* wefreeTests */,
 				516CD60B18E2855C007FDC19 /* Frameworks */,
 				516CD60A18E2855C007FDC19 /* Products */,
@@ -118,34 +180,6 @@
 				516CD61118E2855C007FDC19 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		516CD61218E2855C007FDC19 /* wefree */ = {
-			isa = PBXGroup;
-			children = (
-				516CD61E18E2855C007FDC19 /* AppDelegate.h */,
-				516CD61F18E2855C007FDC19 /* AppDelegate.m */,
-				516CD64018E288B2007FDC19 /* wefree-192.0.png */,
-				516CD64118E288B2007FDC19 /* wefree-192.25.png */,
-				516CD64218E288B2007FDC19 /* wefree-192.50.png */,
-				516CD64318E288B2007FDC19 /* wefree-192.75.png */,
-				516CD64418E288B2007FDC19 /* wefree-192.100.png */,
-				516CD62118E2855C007FDC19 /* MainMenu.xib */,
-				516CD61318E2855C007FDC19 /* Supporting Files */,
-			);
-			path = wefree;
-			sourceTree = "<group>";
-		};
-		516CD61318E2855C007FDC19 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				516CD61418E2855C007FDC19 /* wefree-Info.plist */,
-				516CD61518E2855C007FDC19 /* InfoPlist.strings */,
-				516CD61818E2855C007FDC19 /* main.m */,
-				516CD61A18E2855C007FDC19 /* wefree-Prefix.pch */,
-				516CD61B18E2855C007FDC19 /* Credits.rtf */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		516CD63018E2855C007FDC19 /* wefreeTests */ = {
@@ -242,14 +276,27 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				516CD61718E2855C007FDC19 /* InfoPlist.strings in Resources */,
-				516CD64618E288B2007FDC19 /* wefree-192.25.png in Resources */,
-				516CD64718E288B2007FDC19 /* wefree-192.50.png in Resources */,
-				516CD64918E288B2007FDC19 /* wefree-192.100.png in Resources */,
-				516CD61D18E2855C007FDC19 /* Credits.rtf in Resources */,
-				516CD64818E288B2007FDC19 /* wefree-192.75.png in Resources */,
-				516CD62318E2855C007FDC19 /* MainMenu.xib in Resources */,
-				516CD64518E288B2007FDC19 /* wefree-192.0.png in Resources */,
+				516C202618E7C89500D8C7E2 /* Images.xcassets in Resources */,
+				516C203818E7C89500D8C7E2 /* wefree-Info.plist in Resources */,
+				516C202D18E7C89500D8C7E2 /* connected.png in Resources */,
+				516C203018E7C89500D8C7E2 /* signals.25.png in Resources */,
+				516C202518E7C89500D8C7E2 /* InfoPlist.strings in Resources */,
+				516C202918E7C89500D8C7E2 /* lock-signals-unknown.25.png in Resources */,
+				516C202E18E7C89500D8C7E2 /* signals.0.png in Resources */,
+				516C203118E7C89500D8C7E2 /* signals.50.png in Resources */,
+				516C203618E7C89500D8C7E2 /* wefree-192.50.png in Resources */,
+				516C203218E7C89500D8C7E2 /* signals.75.png in Resources */,
+				516C202218E7C89500D8C7E2 /* MainMenu.xib in Resources */,
+				516C202718E7C89500D8C7E2 /* lock-signals-unknown.0.png in Resources */,
+				516C202818E7C89500D8C7E2 /* lock-signals-unknown.100.png in Resources */,
+				516C202B18E7C89500D8C7E2 /* lock-signals-unknown.75.png in Resources */,
+				516C203518E7C89500D8C7E2 /* wefree-192.25.png in Resources */,
+				516C202418E7C89500D8C7E2 /* Credits.rtf in Resources */,
+				516C203418E7C89500D8C7E2 /* wefree-192.100.png in Resources */,
+				516C202A18E7C89500D8C7E2 /* lock-signals-unknown.50.png in Resources */,
+				516C203718E7C89500D8C7E2 /* wefree-192.75.png in Resources */,
+				516C202F18E7C89500D8C7E2 /* signals.100.png in Resources */,
+				516C203318E7C89500D8C7E2 /* wefree-192.0.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,8 +315,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				516CD62018E2855C007FDC19 /* AppDelegate.m in Sources */,
-				516CD61918E2855C007FDC19 /* main.m in Sources */,
+				516C202118E7C89500D8C7E2 /* AppDelegate.m in Sources */,
+				516C202318E7C89500D8C7E2 /* Database.m in Sources */,
+				516C202C18E7C89500D8C7E2 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,28 +340,28 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		516CD61518E2855C007FDC19 /* InfoPlist.strings */ = {
+		516C200518E7C89500D8C7E2 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				516CD61618E2855C007FDC19 /* en */,
+				516C200618E7C89500D8C7E2 /* Base */,
 			);
-			name = InfoPlist.strings;
+			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
-		516CD61B18E2855C007FDC19 /* Credits.rtf */ = {
+		516C200918E7C89500D8C7E2 /* Credits.rtf */ = {
 			isa = PBXVariantGroup;
 			children = (
-				516CD61C18E2855C007FDC19 /* en */,
+				516C200A18E7C89500D8C7E2 /* en */,
 			);
 			name = Credits.rtf;
 			sourceTree = "<group>";
 		};
-		516CD62118E2855C007FDC19 /* MainMenu.xib */ = {
+		516C200B18E7C89500D8C7E2 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				516CD62218E2855C007FDC19 /* Base */,
+				516C200C18E7C89500D8C7E2 /* en */,
 			);
-			name = MainMenu.xib;
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		516CD63318E2855C007FDC19 /* InfoPlist.strings */ = {
@@ -353,6 +401,7 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -386,6 +435,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -482,6 +532,7 @@
 				516CD63C18E2855C007FDC19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		516CD63D18E2855C007FDC19 /* Build configuration list for PBXNativeTarget "wefreeTests" */ = {
 			isa = XCConfigurationList;
@@ -490,6 +541,7 @@
 				516CD63F18E2855C007FDC19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

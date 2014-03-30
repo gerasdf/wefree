@@ -1,9 +1,8 @@
 {
   "images" : [
     {
-      "size" : "16x16",
       "idiom" : "mac",
-      "filename" : "wefree-192.0.png",
+      "size" : "16x16",
       "scale" : "1x"
     },
     {
