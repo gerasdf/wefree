@@ -1,7 +1,8 @@
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import render
 from models import AP, Report
+from django.views.decorators.http import condition
 
 sample = {
     'essid': 'wefreenetworkessid',
@@ -21,19 +22,26 @@ report_sample = {
 def index(request):
     return render(request, "core/index.html")
 
-def get(request):
-    ret_data = ""
+
+def stream_response_generator(nonchunked):
     aps = AP.objects.all().select_related()
     separator = "\n"
-
-    if request.GET.get("nonchunked"):
-        ret_data += "["
+    if nonchunked:
+        yield "["
         separator = ","
-    ret_data += separator.join([ap.to_json() for ap in aps])
-    if request.GET.get("nonchunked"):
-        ret_data += "]"
+    last = aps.last()
+    for ap in aps:
+        yield ap.to_json()
+        if ap != last:
+			 yield separator
+    if nonchunked:
+        yield "]"
 
-    return HttpResponse(ret_data, mimetype="application/json")
+@condition(etag_func=None)
+def get(request):
+    nonchunked=(request.GET.get("nonchunked") == u'1')
+    response = StreamingHttpResponse(stream_response_generator(nonchunked=nonchunked), content_type="json")
+    return response
 
 def report(request):
     if not request.method == "POST":

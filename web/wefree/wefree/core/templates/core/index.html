@@ -10,24 +10,33 @@ $(function(){
     markers = new L.MarkerClusterGroup();
     icon = L.divIcon({className: 'wifree', iconSize: [25, 16] });
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+	map.addLayer(markers);
+	
 
-    $.get("/get/?nonchunked=1", function(data) {
-            aps = data;
-            for (var i = 0; i <  aps.length; i++) {
-                var ap = aps[i];
-                if (ap.positions[0]) {
-                    lat = ap.positions[0][0];
-                    lon = ap.positions[0][1];
-                    if(lat != null && lon !=null) {
-                        markers.addLayer(
-                            L.marker([lat, lon], {icon: icon})
-							.bindPopup("<div class='wifree-ssid'>" + ap.essid + "</div><div class='wifree-passwd'>" + ap.passwords + "</div>")
-                        );
-                    }
-                }
-            }
-            map.addLayer(markers);
-        }, "json");
+	setTimeout(function(){
+		$.ajax("/get/?nonchunked=0", {
+			xhrFields: {
+	            onprogress: function(data) {
+		            aps = data.currentTarget.response.split("\n");
+		            for (var i = 0; i <  aps.length; i++) {
+						if (aps[i]) {
+		                	var ap = JSON.parse(aps[i]);
+			                if (ap.positions[0]) {
+			                    lat = ap.positions[0][0];
+			                    lon = ap.positions[0][1];
+			                    if(lat != null && lon !=null) {
+			                        markers.addLayer(
+			                            L.marker([lat, lon], {icon: icon})
+			                            .bindPopup("<div class='wifree-ssid'>" + ap.essid + "</div><div class='wifree-passwd'>" + ap.passwords + "</div>")
+			                        );
+			                    }
+			                }
+						}
+					}
+				}
+			}
+		});
+	}, 5000);
 
 });
 </script>
