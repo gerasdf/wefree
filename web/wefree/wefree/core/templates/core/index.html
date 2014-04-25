@@ -13,31 +13,52 @@ $(function(){
 	map.addLayer(markers);
 	
 
-	setTimeout(function(){
-		$.ajax("/get/?nonchunked=0", {
-			xhrFields: {
-	            onprogress: function(data) {
-		            aps = data.currentTarget.response.split("\n");
-		            for (var i = 0; i <  aps.length; i++) {
-						if (aps[i]) {
-		                	var ap = JSON.parse(aps[i]);
-			                if (ap.positions[0]) {
-			                    lat = ap.positions[0][0];
-			                    lon = ap.positions[0][1];
-			                    if(lat != null && lon !=null) {
-			                        markers.addLayer(
-			                            L.marker([lat, lon], {icon: icon})
-			                            .bindPopup("<div class='wifree-ssid'>" + ap.essid + "</div><div class='wifree-passwd'>" + ap.passwords + "</div>")
-			                        );
-			                    }
-			                }
-						}
+	index = 0;
+	draw_index = 0;
+	var tags = [];
+	var drawTag = function(tag) {
+        markers.addLayer(tag);
+	};
+	finish = false;
+	var drawer = setInterval( function() {
+		if (draw_index < index) {
+			markers.addLayers(tags[draw_index]);
+			draw_index++;
+		} else {
+			if (typeof tags[draw_index] === "undefined") {
+				tags[draw_index] = [];
+			}
+			element = tags[draw_index].pop();
+			if (element) {
+				drawTag(element);
+			} else {
+				if (finish) { clearInterval(drawer); }
+			}
+		}
+	}, 1);
+	req = $.ajax("/get/?nonchunked=0", {
+		complete: function(data) { finish = true; },
+		xhrFields: {
+            onprogress: function(data) {
+	            aps = data.currentTarget.response.split("\n");
+				tags[index] = []
+	            for (var i = 0; i <  aps.length; i++) {
+					if (aps[i]) {
+	                	var ap = JSON.parse(aps[i]);
+		                if (ap.positions[0]) {
+		                    lat = ap.positions[0][0];
+		                    lon = ap.positions[0][1];
+		                    if(lat != null && lon !=null) {
+								tags[index].push(L.marker([lat, lon], {icon: icon})
+		                            .bindPopup("<div class='wifree-ssid'>" + ap.essid + "</div><div class='wifree-passwd'>" + ap.passwords + "</div>"));
+		                    }
+		                }
 					}
 				}
+				index++;
 			}
-		});
-	}, 5000);
-
+		}
+	});
 });
 </script>
 {% endblock %}
